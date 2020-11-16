@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++0x -g   CMakeFiles/SFMLTurboHiker.dir/main.cpp.o CMakeFiles/SFMLTurboHiker.dir/src/Animation.cpp.o  -o SFMLTurboHiker  /usr/lib/libsfml-audio.so /usr/lib/libsfml-graphics.so /usr/lib/libsfml-window.so /usr/lib/libsfml-system.so 
