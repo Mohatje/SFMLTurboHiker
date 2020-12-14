@@ -1,12 +1,12 @@
-#ifndef SFMLTURBOHIKER_ANIMATION_H
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <memory>
-#define SFMLTURBOHIKER_ANIMATION_H
+
 
 namespace turbohikerSFML {
     class Animation {
     public:
-        Animation(std::unique_ptr<sf::Texture>& texture, sf::Vector2u imageCount, float timeToSwitch);
+        Animation(std::shared_ptr<sf::Texture>& texture, sf::Vector2u imageCount, float timeToSwitch);
         virtual ~Animation();
 
         void update(int row, float time, bool flip = false);
@@ -23,5 +23,3 @@ namespace turbohikerSFML {
 
 }
 
-
-#endif //SFMLTURBOHIKER_ANIMATION_H

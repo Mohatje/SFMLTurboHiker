@@ -1,2 +1,2 @@
 
-#define MEDIA "../media"
+#define MEDIA "./media"
