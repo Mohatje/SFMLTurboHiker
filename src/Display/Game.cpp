@@ -37,9 +37,9 @@ namespace turbohikerSFML {
         }
 
         window.setVerticalSyncEnabled(false);
+        window.setFramerateLimit(72);
 
         sharedWindow = std::shared_ptr<sf::RenderWindow> (&window);
-//        weakPtrWindow = sharedWindow;
 
         this->init();
     }
@@ -145,6 +145,8 @@ namespace turbohikerSFML {
 
             auto now = clock::now();
             dTime = std::chrono::duration_cast<std::chrono::duration<float>>(now - last).count();
+            std::cout   << dTime << "\t"
+                        << std::chrono::nanoseconds(now - last).count() / 1e9 << std::endl;
             last = now;
 
             window.clear(sf::Color(150, 150, 150));

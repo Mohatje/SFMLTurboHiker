@@ -47,38 +47,36 @@ namespace turbohikerSFML {
     void Player::update(float dTime) {
 //        bool run = false;
 
-        anim->update(idleAnimation, dTime);
+//        anim->update(idleAnimation, dTime);
 
         auto curVelocity = getVelocity();
 
 //        std::pair<double, double> curVelocity {0, 0};
 
         // Velocity decay
-        std::cout << curVelocity.first << std::endl;
         curVelocity.first -= (curVelocity.first * 4.0 * dTime ); // Skidding for 250ms after no input
         curVelocity.second -= (curVelocity.second * 4.0 * dTime );
-        std::cout << curVelocity.first << "\t" << dTime << std::endl;
 
         if (sf::Keyboard::isKeyPressed(Left)) {
 //            run = true;
             textureFlipped = true;
-            curVelocity.first -= (0.25 * dTime);
+            curVelocity.first -= (0.75 * dTime);
         }
 
         if (sf::Keyboard::isKeyPressed(Right)) {
 //            run = true;
             textureFlipped = false;
-            curVelocity.first += (0.25 * dTime);
+            curVelocity.first += (0.75 * dTime);
         }
 
         if (sf::Keyboard::isKeyPressed(Down)) {
 //            run = true;
-            curVelocity.second -= (0.10 * dTime);
+            curVelocity.second -= (0.60 * dTime);
         }
 
         if (sf::Keyboard::isKeyPressed(Up)) {
 //            run = true;
-            curVelocity.second += (0.10 * dTime);
+            curVelocity.second += (0.60 * dTime);
         }
 
         if (sf::Keyboard::isKeyPressed(Yell)) {
@@ -94,7 +92,7 @@ namespace turbohikerSFML {
         curVelocity.first = std::max(std::min(curVelocity.first, 0.1), -0.1);
         curVelocity.second = std::max(std::min(curVelocity.second, 0.1), -0.1);
         setVelocity(curVelocity);
-        move(curVelocity);
+        move( curVelocity );
 
 
 
