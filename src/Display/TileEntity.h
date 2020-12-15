@@ -18,13 +18,14 @@ namespace turbohikerSFML {
         void display() override;
 
         void update(float dT) override {}
-        void doTypeSpecificAction() {}
-        void move() {}
+        void doTypeSpecificAction() override {}
+        void move(const std::pair<double, double>& offset) override;
 
         turbohiker::EntityType getType() const { return turbohiker::EntityType::Tile; }
 
         void setPosition(const std::pair<double, double> &_position) override;
         void setSize(const std::pair<double, double> &_size) override;
+        void setOrigin(const std::pair<double, double> &_origin) override;
 
     private:
         std::weak_ptr<sf::RenderWindow> _window;

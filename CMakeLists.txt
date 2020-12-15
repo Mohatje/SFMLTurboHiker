@@ -47,13 +47,14 @@ add_executable(SFMLTurboHiker
                 src/Display/KeyConfigHelper.cpp
                 src/Display/FactoryCreator.cpp
                 src/Display/EntityFactory.cpp
-                src/Display/Game.cpp src/Display/State.cpp src/Display/State.h src/Display/World.cpp src/Display/World.h src/Display/TileEntity.cpp src/Display/TileEntity.h)
+                src/Display/Game.cpp
+                src/Display/State.cpp
+                src/Display/World.cpp
+                src/Display/TileEntity.cpp)
 
-if (${CMAKE_BUILD_TYPE} MATCHES "Release")
-    find_package(SFML 2 COMPONENTS audio graphics window system REQUIRED)
-else()
-    find_package(SFML 2 COMPONENTS audio-d graphics-d window-d system-d REQUIRED)
-endif()
+
+find_package(SFML 2 COMPONENTS audio graphics window system REQUIRED)
+
 
 include_directories(${SFML_INCLUDE_DIR})
 target_link_libraries(SFMLTurboHiker ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})

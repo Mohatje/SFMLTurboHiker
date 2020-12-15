@@ -30,4 +30,8 @@ namespace turbohiker {
         this->position.first += offset.first;
         this->position.second += offset.second;
     }
+
+    void Entity::setOrigin(const std::pair<double, double> &_origin) {
+        this->origin = _origin;
+    }
 }

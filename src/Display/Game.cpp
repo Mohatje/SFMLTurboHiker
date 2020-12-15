@@ -27,27 +27,24 @@ namespace turbohikerSFML {
 
 
         if (fullscreen) {
-            window.create(sf::VideoMode(width, height), "TurboHiker",
-                          sf::Style::Fullscreen);
+            window = std::make_shared<sf::RenderWindow> (sf::VideoMode(width, height), "TurboHiker",
+                                                         sf::Style::Fullscreen);
         }
         else {
-            window.create(sf::VideoMode(width, height), "TurboHiker",
+            window = std::make_shared<sf::RenderWindow> (sf::VideoMode(width, height), "TurboHiker",
                           sf::Style::Close | sf::Style::Titlebar);
 
         }
 
-        window.setVerticalSyncEnabled(false);
-        window.setFramerateLimit(72);
-
-        sharedWindow = std::shared_ptr<sf::RenderWindow> (&window);
+        window->setVerticalSyncEnabled(false);
+        window->setFramerateLimit(700);
 
         this->init();
     }
 
     void Game::init() {
 
-        auto windowPtr = std::shared_ptr<sf::RenderWindow>(&window);
-        entFactory = FactoryCreator::getFactory("entity", windowPtr, config);
+        entFactory = FactoryCreator::getFactory("entity", window, config);
 
         EntityRef worldEnt = entFactory->createEntity(turbohiker::EntityType::World);
         if (worldEnt->getType() != turbohiker::EntityType::World)
@@ -60,8 +57,8 @@ namespace turbohikerSFML {
 
         world->addEntity(entFactory->createEntity(turbohiker::EntityType::Player));
 
-        gameView.setSize(static_cast<sf::Vector2f> (window.getSize()));
-        gameView.setCenter(static_cast<sf::Vector2f> (window.getSize()) / 2.0f);
+        gameView.setSize(static_cast<sf::Vector2f> (window->getSize()));
+        gameView.setCenter(static_cast<sf::Vector2f> (window->getSize()) / 2.0f);
 
         // Invisible collider at bottom of map
         std::string tileSetPath = config["World"]["Transparent"].as_string_or_die();
@@ -69,11 +66,21 @@ namespace turbohikerSFML {
         if (!transparent->loadFromFile(tileSetPath))
             std::cerr << "Cannot load transparent texture " << tileSetPath << ". Please check the configuration file." << std::endl;
 
+        auto bottomCollider = EntityRef (new TileEntity(window, {0.0, -3}, {8, 0.25},
+                                                        nullptr, {0, 0}));
 
-        world->addEntity(EntityRef (new TileEntity(sharedWindow, {0.0, -3.75}, {8, 1},
-                                                 transparent, {0, 0})));
-        world->addEntity(EntityRef (new TileEntity(sharedWindow, {0.0, 3.25}, {8, 1},
-                                                   transparent, {0, 0})));
+        auto topCollider = EntityRef (new TileEntity(window, {0.0, 3}, {8, 0.25},
+                                  nullptr, {0, 0}));
+
+//        bottomCollider->setOrigin( { bottomCollider->getSize().first / 2.0, bottomCollider->getSize().second / 2.0 } );
+//        topCollider->setOrigin( { topCollider->getSize().first / 2.0, topCollider->getSize().second / 2.0 } );
+
+        world->addEntity(std::move(bottomCollider));
+        world->addEntity(std::move(topCollider));
+
+        world->addEntity(EntityRef(new TileEntity(window, {2, 2}, {1.0, 1.0}, nullptr, {0, 0})));
+
+
 
         generateMap();
 
@@ -86,7 +93,7 @@ namespace turbohikerSFML {
             std::cerr << "Cannot load tile set " << tileSetPath << ". Please check the configuration file." << std::endl;
 
 
-        double y = -3.0;
+        double y = -2.75;
         generateStrip({3, 4}, {1, 3}, {4, 4}, y);
 
         for (uint8_t i = 0; i < 12; i++) {
@@ -94,38 +101,29 @@ namespace turbohikerSFML {
             generateStrip({2, 4}, {11, 4}, {0, 4}, y);
         }
 
-//        generateStrip({3, 3}, {1, 5}, {4, 3}, y + 0.5);
-
-
-
     }
 
     void Game::generateStrip(sf::Vector2u Left, sf::Vector2u Middle, sf::Vector2u Right, double y) {
-        double x = -4.0;
-        world->addTile(EntityRef(new TileEntity(sharedWindow, {x, y}, {0.50, 0.50}, tileSet, Left)));
+        double x = -3.75;
+        world->addTile(EntityRef(new TileEntity(window, {x, y}, {0.50, 0.50}, tileSet, Left)));
         for (uint8_t j = 0; j < 14; j++) {
             x += 0.5;
-            world->addTile(EntityRef(new TileEntity(sharedWindow, {x, y}, {0.50, 0.50}, tileSet, Middle)));
+            world->addTile(EntityRef(new TileEntity(window, {x, y}, {0.50, 0.50}, tileSet, Middle)));
         }
         x += 0.5;
-        world->addTile(EntityRef(new TileEntity(sharedWindow, {x, y}, {0.50, 0.50}, tileSet, Right)));
+        world->addTile(EntityRef(new TileEntity(window, {x, y}, {0.50, 0.50}, tileSet, Right)));
 
     }
 
     void Game::calculateView() {
-//        sf::Vector2f playerPos = Transformation::convertPosToPixels(window, world->getPlayerPosition());
-//        float topPixelY = gameView.getCenter().y - (gameView.getSize().y / 2);
-//        auto pVelocity = Transformation::convertSizeToPixels(window, world->getPlayerVelocity());
-//        auto pSize = Transformation::convertSizeToPixels(window, world->getPlayerSize());
 
         gameView.move(0, -world->getSpeed());
-
 
     }
 
     void Game::tryToDraw() {
         float topPixelY = gameView.getCenter().y - (gameView.getSize().y / 2);
-        auto worldPos = Transformation::convertPosFromPixels(window, {0, topPixelY});
+        auto worldPos = Transformation::convertPosFromPixels(*window, {0, topPixelY});
 
         if (lastDrawnY < worldPos.second) {
             lastDrawnY += 0.5;
@@ -139,24 +137,26 @@ namespace turbohikerSFML {
         auto last = clock::now();
         sf::Event ev{};
 
-        while (window.isOpen()) {
-            while (window.pollEvent(ev))
-                if (ev.type == sf::Event::Closed) window.close();
+        while (window->isOpen()) {
+            while (window->pollEvent(ev)) {
+                if (ev.type == sf::Event::Closed) {
+                    window->close();
+                }
+                world->handleGameEvent(ev);
+            }
 
             auto now = clock::now();
             dTime = std::chrono::duration_cast<std::chrono::duration<float>>(now - last).count();
-            std::cout   << dTime << "\t"
-                        << std::chrono::nanoseconds(now - last).count() / 1e9 << std::endl;
             last = now;
 
-            window.clear(sf::Color(150, 150, 150));
+            window->clear(sf::Color(127, 220, 228));
             world->update(dTime);
             world->doTypeSpecificAction();
-            window.setView(gameView);
+            window->setView(gameView);
             tryToDraw();
-            gameView.move(0, -world->getSpeed());
+            gameView.move(0, -world->getSpeed() * dTime);
             world->display();
-            window.display();
+            window->display();
         }
     }
 }

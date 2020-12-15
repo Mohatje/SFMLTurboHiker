@@ -28,8 +28,8 @@ namespace turbohikerSFML {
         std::unique_ptr<turbohiker::AbstractFactory> entFactory;
         ini::Configuration config;
 
-        sf::RenderWindow window;
-        std::shared_ptr<sf::RenderWindow> sharedWindow;
+//        sf::RenderWindow window;
+        std::shared_ptr<sf::RenderWindow> window;
 
         std::unique_ptr<World> world;
         std::shared_ptr<sf::Texture> tileSet;

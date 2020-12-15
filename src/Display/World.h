@@ -13,6 +13,7 @@ namespace turbohikerSFML {
         World(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration& config);
 
         void update(float dTime) override;
+        void handleGameEvent(sf::Event &event);
 
     private:
         sf::Keyboard::Key speedToggle;

@@ -1,5 +1,5 @@
 #include "World.h"
-//#include <cmath>
+#include <cmath>
 
 
 namespace turbohiker {
@@ -37,23 +37,27 @@ namespace turbohiker {
         double intersectX = std::abs(dX) - (oneSize.first + twoSize.first);
         double intersectY = std::abs(dY) - (oneSize.second + twoSize.second);
 
+        double collisionForce = 0.0;
+        if (entOne->getType() == EntityType::Tile) {
+            collisionForce = 1.0;
+        }
 
         if (intersectX < 0.0 && intersectY < 0.0) {
             if (std::abs(intersectX) > std::abs(intersectY)) {
                 if (dY > 0.0) {
-                    entOne->move({0.0, -intersectY * 1.0});
-                    entTwo->move({0.0, intersectY * 0.0});
+                    entOne->move({0.0, -intersectY * (1.0 - collisionForce)});
+                    entTwo->move({0.0, intersectY * collisionForce});
                 } else {
-                    entOne->move({0.0, intersectY * 1.0});
-                    entTwo->move({0.0, -intersectY * 0.0});
+                    entOne->move({0.0, intersectY * (1.0 - collisionForce)});
+                    entTwo->move({0.0, -intersectY * collisionForce});
                 }
             } else {
                 if (dX > 0.0) {
-                    entOne->move({-intersectX * 1.0, 0.0});
-                    entTwo->move({intersectX * 0.0, 0.0});
+                    entOne->move({-intersectX * (1.0 - collisionForce), 0.0});
+                    entTwo->move({intersectX * collisionForce, 0.0});
                 } else {
-                    entOne->move({intersectX * 1.0, 0.0});
-                    entTwo->move({-intersectX * 0.0, 0.0});
+                    entOne->move({intersectX * (1.0 - collisionForce), 0.0});
+                    entTwo->move({-intersectX * collisionForce, 0.0});
                 }
             }
             return true;

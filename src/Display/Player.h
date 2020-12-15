@@ -16,9 +16,12 @@ namespace turbohikerSFML {
         void update(float dTime) override;
         void move(const std::pair<double, double>& offset) override;
 
+        void init();
+
         void setPosition(const std::pair<double, double> &_position) override;
         void setVelocity(const std::pair<double, double> &_velocity) override;
         void setSize(const std::pair<double, double> &_size) override;
+        void setOrigin(const std::pair<double, double> &_origin) override;
 
     private:
         std::weak_ptr<sf::RenderWindow> _window;

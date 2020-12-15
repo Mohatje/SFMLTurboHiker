@@ -10,11 +10,11 @@ namespace turbohikerSFML {
                             const ini::Configuration &configFile) : _window(window) {
 
         std::string texturePath = configFile["Player"]["Texture"].as_string_or_die();
-        playerTexture = std::make_shared<sf::Texture>( );
+        playerTexture = std::make_shared<sf::Texture>(  );
 
-        if (!playerTexture->loadFromFile( texturePath )) {
-            std::cerr << "Cannot load texture " << texturePath << ". Please check the configuration file." << std::endl;
-        }
+//        if (!playerTexture->loadFromFile( texturePath )) {
+//            std::cerr << "Cannot load texture " << texturePath << ". Please check the configuration file." << std::endl;
+//        }
 
         unsigned int rows = configFile["Player"]["RowCount"].as_int_or_default(1);
         unsigned int cols = configFile["Player"]["ColumnCount"].as_int_or_default(1);
@@ -30,13 +30,18 @@ namespace turbohikerSFML {
         Down = KeyConfigHelper::keyboardFromString(configFile["Controls"]["Down"].as_string_or_default("S"));
         Yell = KeyConfigHelper::keyboardFromString(configFile["Controls"]["Yell"].as_string_or_default("Y"));
 
-        // this->setSize({0.20, 0.60});
-        playerRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape({200.f, 148.f}));
-        playerRect->setOrigin({100.f, 148.f});
-        playerRect->setPosition(640, 360);
-        playerRect->setTexture(playerTexture.get());
+        init();
 
         anim = std::unique_ptr<Animation> (new Animation(playerTexture, {cols, rows}, frameTime));
+    }
+
+    void Player::init() {
+        playerRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape());
+        setSize({1.00, 1.00});
+        setPosition({0, 0});
+        setOrigin( {0.5, 0.5} );
+        playerRect->setTexture(playerTexture.get());
+
     }
 
     void Player::display() {
@@ -45,54 +50,44 @@ namespace turbohikerSFML {
     }
 
     void Player::update(float dTime) {
-//        bool run = false;
-
-//        anim->update(idleAnimation, dTime);
-
         auto curVelocity = getVelocity();
 
-//        std::pair<double, double> curVelocity {0, 0};
-
         // Velocity decay
-        curVelocity.first -= (curVelocity.first * 4.0 * dTime ); // Skidding for 250ms after no input
-        curVelocity.second -= (curVelocity.second * 4.0 * dTime );
+        curVelocity.first -= ( curVelocity.first * 12.0 * dTime ); // Skidding for about 125ms after no input
+        curVelocity.second -= ( curVelocity.second * 12.0 * dTime );
+
 
         if (sf::Keyboard::isKeyPressed(Left)) {
-//            run = true;
             textureFlipped = true;
-            curVelocity.first -= (0.75 * dTime);
+            curVelocity.first -= 0.75;
         }
 
         if (sf::Keyboard::isKeyPressed(Right)) {
-//            run = true;
             textureFlipped = false;
-            curVelocity.first += (0.75 * dTime);
+            curVelocity.first += 0.75;
         }
 
         if (sf::Keyboard::isKeyPressed(Down)) {
-//            run = true;
-            curVelocity.second -= (0.60 * dTime);
+            curVelocity.second -= 0.60;
         }
 
         if (sf::Keyboard::isKeyPressed(Up)) {
-//            run = true;
-            curVelocity.second += (0.60 * dTime);
+            curVelocity.second += 0.60;
         }
 
         if (sf::Keyboard::isKeyPressed(Yell)) {
         }
 
-//        run ? anim->update(runAnimation, dTime, textureFlipped) : anim->update(idleAnimation, dTime, false);
 
-        if ((std::abs(curVelocity.first) > 5e-3) || (std::abs(curVelocity.second) > 5e-3) )
+        if ((std::abs(curVelocity.first) > 1.0f) || (std::abs(curVelocity.second) > 1.0f) )
             anim->update(runAnimation, dTime, textureFlipped);
         else
             anim->update(idleAnimation, dTime, textureFlipped);
 
-        curVelocity.first = std::max(std::min(curVelocity.first, 0.1), -0.1);
-        curVelocity.second = std::max(std::min(curVelocity.second, 0.1), -0.1);
+        curVelocity.first = std::max(std::min(curVelocity.first, 2.0), -2.0);
+        curVelocity.second = std::max(std::min(curVelocity.second, 2.0), -2.0);
         setVelocity(curVelocity);
-        move( curVelocity );
+        move( {curVelocity.first * dTime, curVelocity.second * dTime} );
 
 
 
@@ -122,8 +117,15 @@ namespace turbohikerSFML {
 
     void Player::setSize(const std::pair<double, double> &_size) {
         Entity::setSize(_size);
+        auto convertedSize = Transformation::convertSizeToPixels(*_window.lock(), _size);
 
-        playerRect->setSize(Transformation::convertSizeToPixels(*_window.lock(), _size));
+        playerRect->setSize(convertedSize);
+    }
+
+    void Player::setOrigin(const std::pair<double, double> &_origin) {
+        Entity::setOrigin(_origin);
+        auto convertedOrigin = Transformation::convertSizeToPixels(*_window.lock(), { _origin.first, getSize().second - _origin.second });
+        playerRect->setOrigin( convertedOrigin );
     }
 
 
