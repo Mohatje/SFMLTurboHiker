@@ -1,5 +1,5 @@
 #include "World.h"
-#include <cmath>
+#include <iostream>
 
 
 namespace turbohiker {
@@ -7,20 +7,44 @@ namespace turbohiker {
     void World::move(const std::pair<double, double> &offset) {     }
 
     // Will be using this function for collision control
-    void World::doTypeSpecificAction() {
+    bool World::doTypeSpecificAction() {
         for (uint32_t i = 0; i < worldEntities.size() - 1; i++) {
-            for (uint32_t j = i + 1; j < worldEntities.size() && j != i; j++) {
+            for (uint32_t j = i + 1; j < worldEntities.size(); j++) {
                 checkCollision(*std::next(worldEntities.begin(), i),
                                *std::next(worldEntities.begin(), j));
             }
         }
 
-        for (auto& ent : worldEntities)
-            ent->doTypeSpecificAction();
+        for (auto& ent : worldEntities) {
+            bool entAction = ent->doTypeSpecificAction();
+            if (ent->getType() == EntityType::Player && entAction && hasYelled()) {
+                yelled = false;
+                removeNearestObstacle();
+            }
+        }
+        return false;
+    }
+
+    bool World::removeNearestObstacle() {
+        return false;
     }
 
     // AABB collision detecting algo
     bool World::checkCollision(const EntityRef& entOne, const EntityRef& entTwo) {
+        if (entOne->getType() == entTwo->getType() && entOne->getType() == EntityType::Tile) {
+            return false;
+        }
+
+        if (entOne->getType() == EntityType::StaticHikerInactive || entTwo->getType() == EntityType::StaticHikerInactive) return false;
+
+        if ((entOne->getType() == EntityType::StaticHikerActive && entTwo->getType() == EntityType::Tile)
+            || (entTwo->getType() == EntityType::StaticHikerActive && entOne->getType() == EntityType::Tile)) {
+            return false;
+        }
+
+        if (entOne->getType() == EntityType::StaticHikerActive && entTwo->getType() == EntityType::StaticHikerActive) return false;
+
+
         auto onePos = entOne->getPosition();
         auto oneSize = entOne->getSize();
         auto twoPos = entTwo->getPosition();
@@ -74,10 +98,18 @@ namespace turbohiker {
     }
 
     void World::display() {
+        std::cout << worldTiles.size() << std::endl;
         for (auto& tile : worldTiles)
             tile->display();
         for (auto& entity : worldEntities) {
-            entity->display();
+            if (entity->getType() == EntityType::StaticHikerInactive) {
+                entity->display();
+            }
+        }
+        for (auto& entity : worldEntities) {
+            if (entity->getType() != EntityType::StaticHikerInactive) {
+                entity->display();
+            }
         }
     }
 
@@ -99,30 +131,31 @@ namespace turbohiker {
     }
 
     std::pair<double, double> World::getPlayerSize() {
-        std::pair<double, double> ret { 0.0, 0.0 };
-        for (auto& entity : worldEntities) {
-            if (entity->getType() == turbohiker::EntityType::Player)
-                ret = entity->getSize();
-        }
-        return ret;
+        return getPlayerPtr()->getSize();
     }
 
     std::pair<double, double> World::getPlayerPosition() {
-        std::pair<double, double> ret { 0.0, 0.0 };
-        for (auto& entity : worldEntities) {
-            if (entity->getType() == turbohiker::EntityType::Player)
-                ret = entity->getPosition();
-        }
-        return ret;
+        return getPlayerPtr()->getPosition();
     }
 
     std::pair<double, double> World::getPlayerVelocity() {
-        std::pair<double, double> ret { 0.0, 0.0 };
+        return getPlayerPtr()->getVelocity();
+    }
+
+    void World::movePlayer(const std::pair<double, double>& offset) {
         for (auto& entity : worldEntities) {
             if (entity->getType() == turbohiker::EntityType::Player)
-                ret = entity->getVelocity();
+                entity->move(offset);
         }
-        return ret;
+    }
+
+    const std::unique_ptr<Entity>& World::getPlayerPtr() {
+        static const EntityRef bruh ( nullptr );
+        for (auto& entity : worldEntities) {
+            if (entity->getType() == turbohiker::EntityType::Player)
+                return entity;
+        }
+        return bruh;
     }
 
     float World::getSpeed() const {
@@ -131,6 +164,28 @@ namespace turbohiker {
 
     void World::setSpeed(float _speed) {
         speed = _speed;
+    }
+
+    bool World::hasYelled() const {
+        return yelled;
+    }
+
+    void World::setYelled(bool _yelled) {
+       yelled = _yelled;
+    }
+
+    void World::removeObstacles(double bottomY) {
+        std::set<EntityRef>::iterator it;
+        for (it = worldEntities.begin(); it != worldEntities.end(); it++) {
+            if ((*it)->getPosition().second < bottomY) {
+                worldEntities.erase(it);
+            }
+        }
+        for (it = worldTiles.begin(); it != worldTiles.end(); it++) {
+            if ((*it)->getPosition().second < bottomY) {
+                worldTiles.erase(it);
+            }
+        }
     }
 
 

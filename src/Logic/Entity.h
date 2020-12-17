@@ -7,10 +7,11 @@ namespace turbohiker {
         Invalid = 0,
         Player = 1,
         RacingHiker = 2,
-        StaticHiker = 3,
-        MovingHiker = 4, // Hiker/obstacle moving towards player
-        World = 5,
-        Tile = 6
+        StaticHikerActive = 3,
+        StaticHikerInactive = 4,
+        MovingHiker = 5, // Hiker/obstacle moving towards player
+        World = 6,
+        Tile = 7
     };
 
     class Entity {
@@ -30,7 +31,7 @@ namespace turbohiker {
 
         virtual void display() = 0;
         virtual void update(float dTime) = 0;
-        virtual void doTypeSpecificAction() = 0;
+        virtual bool doTypeSpecificAction() = 0;
         virtual void move(const std::pair<double, double>& offset);
 
         virtual EntityType getType() const = 0;

@@ -10,11 +10,20 @@ namespace turbohikerSFML {
                             const ini::Configuration &configFile) : _window(window) {
 
         std::string texturePath = configFile["Player"]["Texture"].as_string_or_die();
+        std::string yellPath = configFile["Player"]["YellSound"].as_string_or_die();
         playerTexture = std::make_shared<sf::Texture>(  );
+        yellSound = std::make_shared<sf::SoundBuffer>(  );
+        playerSound = std::make_shared<sf::Sound>(  );
 
-//        if (!playerTexture->loadFromFile( texturePath )) {
-//            std::cerr << "Cannot load texture " << texturePath << ". Please check the configuration file." << std::endl;
-//        }
+        if (!playerTexture->loadFromFile( texturePath )) {
+            std::cerr << "Cannot load texture " << texturePath << ". Please check the configuration file." << std::endl;
+        }
+
+        if (!yellSound->loadFromFile( yellPath )) {
+            std::cerr << "Cannot load audio file " << yellPath << ". Please check the configuration file." << std::endl;
+        }
+        playerSound->setBuffer(*yellSound);
+        playerSound->setVolume(35.f);
 
         unsigned int rows = configFile["Player"]["RowCount"].as_int_or_default(1);
         unsigned int cols = configFile["Player"]["ColumnCount"].as_int_or_default(1);
@@ -37,9 +46,9 @@ namespace turbohikerSFML {
 
     void Player::init() {
         playerRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape());
-        setSize({1.00, 1.00});
+        setSize({0.5, 0.5});
         setPosition({0, 0});
-        setOrigin( {0.5, 0.5} );
+        setOrigin( { getSize().first / 2.0, getSize().second / 2.0 } );
         playerRect->setTexture(playerTexture.get());
 
     }
@@ -76,6 +85,7 @@ namespace turbohikerSFML {
         }
 
         if (sf::Keyboard::isKeyPressed(Yell)) {
+            playerSound->play();
         }
 
 
@@ -84,7 +94,7 @@ namespace turbohikerSFML {
         else
             anim->update(idleAnimation, dTime, textureFlipped);
 
-        curVelocity.first = std::max(std::min(curVelocity.first, 2.0), -2.0);
+        curVelocity.first = std::max(std::min(curVelocity.first, 3.0), -3.0);
         curVelocity.second = std::max(std::min(curVelocity.second, 2.0), -2.0);
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
@@ -94,12 +104,12 @@ namespace turbohikerSFML {
         playerRect->setTextureRect(anim->textureRect);
     }
 
+    bool Player::doTypeSpecificAction() {
+        return true;
+    }
+
     void Player::move(const std::pair<double, double> &offset) {
-        auto curPosition = getPosition();
-        auto newOffset = offset;
-        if (curPosition.first + offset.first > 3.5 || curPosition.first + offset.first < -3.5)
-            newOffset.first = 0;
-        Entity::move(newOffset);
+        Entity::move(offset);
         auto newPos = Transformation::convertPosToPixels(*_window.lock(), getPosition());
 
         playerRect->setPosition(newPos);

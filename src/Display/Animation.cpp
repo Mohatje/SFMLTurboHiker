@@ -3,9 +3,9 @@
 
 namespace turbohikerSFML {
     Animation::Animation(std::shared_ptr<sf::Texture> &texture, sf::Vector2u imageCount,
-                                         float timeToSwitch) {
+                                         float _frameTime) {
         this->imageCount = imageCount;
-        this->timeToSwitch = timeToSwitch;
+        this->frameTime = _frameTime;
 
         elapsedTime = 0.f;
         currentImage.x = 0;
@@ -21,8 +21,8 @@ namespace turbohikerSFML {
         currentImage.y = row;
         elapsedTime += time;
 
-        if (elapsedTime >= timeToSwitch) {
-            elapsedTime -= timeToSwitch;
+        if (elapsedTime >= frameTime) {
+            elapsedTime -= frameTime;
             currentImage.x++;
             if (currentImage.x >= imageCount.x)
                 currentImage.x = 0;
@@ -37,5 +37,13 @@ namespace turbohikerSFML {
             textureRect.width = abs(textureRect.width);
         }
 
+    }
+
+    float Animation::getFrameTime() const {
+        return frameTime;
+    }
+
+    void Animation::setFrameTime(float frameTime) {
+        Animation::frameTime = frameTime;
     }
 }

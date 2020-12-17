@@ -12,7 +12,7 @@ namespace turbohikerSFML {
 
         tileRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape(  ));
         if (texture == nullptr) {
-            tileRect->setFillColor(sf::Color::Red);
+            tileRect->setFillColor(sf::Color::Transparent);
         } else {
             tileRect->setTexture(tileSet.get());
             sf::IntRect tileTextRect;
@@ -23,8 +23,6 @@ namespace turbohikerSFML {
             tileRect->setTextureRect(tileTextRect);
         }
 
-        std::cout << "Pos" << position.first << "\t" << position.second << std::endl;
-
         init(position, size);
 
     }
@@ -33,9 +31,6 @@ namespace turbohikerSFML {
         setSize(size);
         setPosition(position);
         setOrigin( { size.first / 2.0,  size.second / 2 } );
-//        tileRect->setOrigin(0, tileRect->getSize().y);
-//        tileRect->setOrigin(tileRect->getSize() / 2.0f);
-
     }
 
     void TileEntity::display() {
@@ -62,7 +57,6 @@ namespace turbohikerSFML {
     }
 
     void TileEntity::move(const std::pair<double, double>& offset) {
-        auto curPosition = getPosition();
         Entity::move(offset);
         auto newPos = Transformation::convertPosToPixels(*_window.lock(), getPosition());
 

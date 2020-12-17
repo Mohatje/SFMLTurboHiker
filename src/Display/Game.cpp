@@ -1,5 +1,6 @@
 #include "../assertion.h"
 #include "Game.h"
+#include "PassingHiker1.h"
 #include "TileEntity.h"
 #include "Transformation.h"
 #include <chrono>
@@ -36,8 +37,7 @@ namespace turbohikerSFML {
 
         }
 
-        window->setVerticalSyncEnabled(false);
-        window->setFramerateLimit(700);
+        window->setVerticalSyncEnabled(true);
 
         this->init();
     }
@@ -69,17 +69,19 @@ namespace turbohikerSFML {
         auto bottomCollider = EntityRef (new TileEntity(window, {0.0, -3}, {8, 0.25},
                                                         nullptr, {0, 0}));
 
-        auto topCollider = EntityRef (new TileEntity(window, {0.0, 3}, {8, 0.25},
+        auto topCollider = EntityRef (new TileEntity(window, {0.0, 3}, {8, 0.50},
                                   nullptr, {0, 0}));
 
-//        bottomCollider->setOrigin( { bottomCollider->getSize().first / 2.0, bottomCollider->getSize().second / 2.0 } );
-//        topCollider->setOrigin( { topCollider->getSize().first / 2.0, topCollider->getSize().second / 2.0 } );
 
+        auto rightCollider = EntityRef (new TileEntity(window, { 4, 0}, {0.5, 8},
+                                                      nullptr, {0, 0}));
+
+        auto leftCollider = EntityRef (new TileEntity(window, { -4, 0}, {0.5, 8},
+                                                      nullptr, {0, 0}));
         world->addEntity(std::move(bottomCollider));
         world->addEntity(std::move(topCollider));
-
-        world->addEntity(EntityRef(new TileEntity(window, {2, 2}, {1.0, 1.0}, nullptr, {0, 0})));
-
+        world->addEntity(std::move(leftCollider));
+        world->addEntity(std::move(rightCollider));
 
 
         generateMap();
@@ -115,10 +117,31 @@ namespace turbohikerSFML {
 
     }
 
-    void Game::calculateView() {
+    void Game::calculateView(float dTime) {
+        float yBottom = gameView.getCenter().y + window->getSize().y / 2.0f;
+        float yTop = gameView.getCenter().y - window->getSize().y / 2.0f;
 
-        gameView.move(0, -world->getSpeed());
+        double yCoordB = Transformation::convertPosFromPixels(*window, {0, yBottom}).second;
+        double yCoordT = Transformation::convertPosFromPixels(*window, {0, yTop}).second;
+        
+        world->removeObstacles(yCoordB - 5.0);
 
+        if (world->getPlayerPosition().second < yCoordB || world->getPlayerPosition().second > yCoordT) {
+            std::cout << "Game Over!" << world->getPlayerPosition().first << ", " << world->getPlayerPosition().second << std::endl;
+            world->movePlayer( { 0.0, 0.5 } );
+        }
+
+        gameView.move(0, -world->getSpeed() * dTime);
+
+    }
+
+    void Game::spawnObstacle() {
+        auto obstacleEntity = entFactory->createEntity(turbohiker::EntityType::StaticHikerActive);
+        auto tmp = dynamic_cast<PassingHiker1*> (obstacleEntity.release());
+        tmp->spawn(world->getPlayerPosition().second);
+        obstacleEntity.reset(tmp);
+
+        world->addEntity(std::move(obstacleEntity));
     }
 
     void Game::tryToDraw() {
@@ -132,6 +155,7 @@ namespace turbohikerSFML {
     }
 
     void Game::run() {
+        static double timer = 0.0;
         using clock = std::chrono::high_resolution_clock;
         float dTime;
         auto last = clock::now();
@@ -148,13 +172,19 @@ namespace turbohikerSFML {
             auto now = clock::now();
             dTime = std::chrono::duration_cast<std::chrono::duration<float>>(now - last).count();
             last = now;
+            timer += dTime;
 
-            window->clear(sf::Color(127, 220, 228));
+            if (timer >= 1.0) {
+                timer = 0;
+                spawnObstacle();
+            }
+
+            window->clear(sf::Color::Magenta);
             world->update(dTime);
             world->doTypeSpecificAction();
-            window->setView(gameView);
             tryToDraw();
-            gameView.move(0, -world->getSpeed() * dTime);
+            calculateView(dTime);
+            window->setView(gameView);
             world->display();
             window->display();
         }

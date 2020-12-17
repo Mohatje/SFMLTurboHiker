@@ -24,6 +24,10 @@ namespace turbohiker {
         static float randFloat();
         static float randFloat(float min, float max);
         static float randFloat(float max);
+
+        static int randInt();
+        static int randInt(int min, int max);
+        static int randInt(int max);
     private:
 
         Random(); // Use of a private constructor to prevent the construction of more than 1 instance
@@ -35,12 +39,14 @@ namespace turbohiker {
         std::mt19937& getGenerator();
 
         float _randFloat(float min = 0.f, float max = 1.f);
+        int _randInt(int min = 0, int max = 100);
 
         std::random_device randomDevice;
 
         std::mt19937 randGenerator;
 
         std::uniform_real_distribution<> fDist;
+        std::uniform_int_distribution<> iDist;
 
     };
 

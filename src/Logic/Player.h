@@ -7,7 +7,7 @@ namespace turbohiker {
     public:
         void display() override;
         void update(float dTime) override;
-        void doTypeSpecificAction() override;
+        bool doTypeSpecificAction() override;
         bool yellAtObstacle();
 
         EntityType getType() const override { return EntityType::Player; }

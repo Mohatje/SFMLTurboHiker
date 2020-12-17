@@ -3,9 +3,10 @@
 
 int main() {
 
-    turbohikerSFML::Game game("./Config/config.ini");
+    turbohikerSFML::Game game("../Config/config.ini");
     game.run();
 
 
     return EXIT_SUCCESS;
 }
+

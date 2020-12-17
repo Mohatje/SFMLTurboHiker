@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Animation.h"
 #include "../Parser/ini_configuration.h"
 #include "../Logic/Player.h"
@@ -15,6 +16,7 @@ namespace turbohikerSFML {
         void display() override;
         void update(float dTime) override;
         void move(const std::pair<double, double>& offset) override;
+        bool doTypeSpecificAction() override;
 
         void init();
 
@@ -27,9 +29,11 @@ namespace turbohikerSFML {
         std::weak_ptr<sf::RenderWindow> _window;
         std::unique_ptr<Animation> anim;
         std::shared_ptr<sf::Texture> playerTexture;
+        std::shared_ptr<sf::SoundBuffer> yellSound;
+        std::shared_ptr<sf::Sound> playerSound;
         std::unique_ptr<sf::RectangleShape> playerRect;
         bool textureFlipped = false;
-        
+
         int idleAnimation;
         int runAnimation;
 

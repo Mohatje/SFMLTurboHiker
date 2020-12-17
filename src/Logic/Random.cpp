@@ -25,6 +25,13 @@ namespace turbohiker {
         return fDist(getInstance().getGenerator());
     }
 
+    int Random::_randInt(int min, int max) {
+        if (fDist.min() != min || fDist.max() != max)
+            iDist = std::uniform_int_distribution<> (min, max);
+
+        return iDist(getInstance().getGenerator());
+    }
+
     float Random::randFloat() {
         return getInstance()._randFloat();
     }
@@ -35,6 +42,18 @@ namespace turbohiker {
 
     float Random::randFloat(float min, float max) {
         return getInstance()._randFloat(min, max);
+    }
+
+    int Random::randInt() {
+        return getInstance()._randInt();
+    }
+
+    int Random::randInt(int max) {
+        return getInstance()._randInt(0, max);
+    }
+
+    int Random::randInt(int min, int max) {
+        return getInstance()._randInt(min, max);
     }
 
 }

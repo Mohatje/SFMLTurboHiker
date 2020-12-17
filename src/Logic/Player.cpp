@@ -11,12 +11,8 @@ namespace turbohiker {
         return Random::randFloat() >= 0.50;
     }
 
-    void Player::doTypeSpecificAction() {
-        if (yellAtObstacle()) {
-
-        } else {
-            
-        }
+    bool Player::doTypeSpecificAction() {
+        return false;
     }
 
 

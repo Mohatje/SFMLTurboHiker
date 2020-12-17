@@ -27,7 +27,7 @@ namespace turbohiker {
 
         void display() override;
         void update(float dt) override;
-        void doTypeSpecificAction() override;
+        bool doTypeSpecificAction() override;
 
         void move(const std::pair<double, double>& offset) override;
 
@@ -42,6 +42,7 @@ namespace turbohiker {
         std::pair<double, double> getPlayerSize();
         std::pair<double, double> getPlayerPosition();
         std::pair<double, double> getPlayerVelocity();
+        const std::unique_ptr<Entity> &getPlayerPtr();
 
         float getSpeed() const;
 
@@ -49,13 +50,24 @@ namespace turbohiker {
 
         bool checkCollision(const EntityRef &entOne, const EntityRef &entTwo);
 
+        virtual bool removeNearestObstacle();
+
+        bool hasYelled() const;
+
+        void removeObstacles(double bottomY);
+
+        void setYelled(bool yelled);
+
+        void movePlayer(const std::pair<double, double> &offset);
     private:
 
         std::set<EntityRef> worldEntities;
+
         std::set<EntityRef> worldTiles;
 
         float speed = 0.0f;
 
+        bool yelled = false;
     };
 
 }

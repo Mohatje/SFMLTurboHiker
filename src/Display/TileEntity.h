@@ -18,7 +18,7 @@ namespace turbohikerSFML {
         void display() override;
 
         void update(float dT) override {}
-        void doTypeSpecificAction() override {}
+        bool doTypeSpecificAction() override { return false; }
         void move(const std::pair<double, double>& offset) override;
 
         turbohiker::EntityType getType() const { return turbohiker::EntityType::Tile; }

@@ -38,10 +38,11 @@ namespace turbohikerSFML {
 
     private:
         void generateMap();
-        void calculateView();
+        void calculateView(float dTime);
         void generateStrip(sf::Vector2u Left, sf::Vector2u Middle, sf::Vector2u Right, double y);
 
         void tryToDraw();
+        void spawnObstacle();
     };
 
 }
