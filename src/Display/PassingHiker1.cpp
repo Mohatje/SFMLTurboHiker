@@ -12,7 +12,7 @@ namespace turbohikerSFML {
         auto inactivePair = configFile["StaticObstacle"]["InactiveTile"].as_int_tuple_or_default( {13, 0} );
 
 
-        obstacleRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape ( ));
+        obstacleRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape( ) );
 
         if (!(obstacleTexture->getSize().x > 0 && obstacleTexture->getSize().y > 0)) {
             if (!obstacleTexture->loadFromFile( tilePath )) {

@@ -1,5 +1,6 @@
 #include "World.h"
 #include <iostream>
+#include <cmath>
 
 
 namespace turbohiker {
@@ -29,21 +30,43 @@ namespace turbohiker {
         return false;
     }
 
+    double World::getCollisionForce(EntityType typeOne, EntityType typeTwo) {
+
+        // Two static obstacles
+        if (typeOne == EntityType::StaticHikerActive && typeTwo == EntityType::StaticHikerActive) return -1.0;
+
+        // Two tiles
+        if (typeOne == typeTwo && typeOne == EntityType::Tile) return -1.0;
+
+        // One or more Inactive obstacles
+        if (typeOne == EntityType::StaticHikerInactive || typeTwo == EntityType::StaticHikerInactive) return -1.0;
+
+        // Collider vs static obstacle
+        if ((typeOne == EntityType::StaticHikerActive && typeTwo == EntityType::Tile)
+            || (typeTwo == EntityType::StaticHikerActive && typeOne == EntityType::Tile)) {
+            return -1.0;
+        }
+
+
+        // Moving obstacle vs collider
+        if ((typeOne == EntityType::MovingHikerActive && typeTwo == EntityType::Tile)
+            || (typeTwo == EntityType::MovingHikerActive && typeOne == EntityType::Tile)) {
+            return -1.0;
+        }
+
+        // First entity is collider => push everything
+        if (typeOne == EntityType::Tile) return 1.0;
+
+        if (typeTwo == EntityType::MovingHikerActive) return 0.75;
+        if (typeOne == EntityType::MovingHikerActive) return 0.25;
+
+        return 0.0;
+    }
+
     // AABB collision detecting algo
     bool World::checkCollision(const EntityRef& entOne, const EntityRef& entTwo) {
-        if (entOne->getType() == entTwo->getType() && entOne->getType() == EntityType::Tile) {
-            return false;
-        }
-
-        if (entOne->getType() == EntityType::StaticHikerInactive || entTwo->getType() == EntityType::StaticHikerInactive) return false;
-
-        if ((entOne->getType() == EntityType::StaticHikerActive && entTwo->getType() == EntityType::Tile)
-            || (entTwo->getType() == EntityType::StaticHikerActive && entOne->getType() == EntityType::Tile)) {
-            return false;
-        }
-
-        if (entOne->getType() == EntityType::StaticHikerActive && entTwo->getType() == EntityType::StaticHikerActive) return false;
-
+        double collisionForce = getCollisionForce(entOne->getType(), entTwo->getType());
+        if (collisionForce < 0.0) return false;
 
         auto onePos = entOne->getPosition();
         auto oneSize = entOne->getSize();
@@ -61,10 +84,7 @@ namespace turbohiker {
         double intersectX = std::abs(dX) - (oneSize.first + twoSize.first);
         double intersectY = std::abs(dY) - (oneSize.second + twoSize.second);
 
-        double collisionForce = 0.0;
-        if (entOne->getType() == EntityType::Tile) {
-            collisionForce = 1.0;
-        }
+
 
         if (intersectX < 0.0 && intersectY < 0.0) {
             if (std::abs(intersectX) > std::abs(intersectY)) {
@@ -98,7 +118,6 @@ namespace turbohiker {
     }
 
     void World::display() {
-        std::cout << worldTiles.size() << std::endl;
         for (auto& tile : worldTiles)
             tile->display();
         for (auto& entity : worldEntities) {
@@ -150,12 +169,12 @@ namespace turbohiker {
     }
 
     const std::unique_ptr<Entity>& World::getPlayerPtr() {
-        static const EntityRef bruh ( nullptr );
+        static const EntityRef null ( nullptr );
         for (auto& entity : worldEntities) {
             if (entity->getType() == turbohiker::EntityType::Player)
                 return entity;
         }
-        return bruh;
+        return null;
     }
 
     float World::getSpeed() const {

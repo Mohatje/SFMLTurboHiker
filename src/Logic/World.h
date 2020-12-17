@@ -19,6 +19,7 @@ namespace turbohiker {
         const std::pair<double, double> &getPosition() const override { return Entity::getPosition(); }
         const std::pair<double, double> &getVelocity() const override { return Entity::getVelocity(); }
         const std::pair<double, double> &getSize() const override { return Entity::getSize(); }
+        double getCollisionForce(EntityType typeOne, EntityType typeTwo);
 
     public:
         World() = default;

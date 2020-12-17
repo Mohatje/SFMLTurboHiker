@@ -9,9 +9,10 @@ namespace turbohiker {
         RacingHiker = 2,
         StaticHikerActive = 3,
         StaticHikerInactive = 4,
-        MovingHiker = 5, // Hiker/obstacle moving towards player
-        World = 6,
-        Tile = 7
+        MovingHikerActive = 5, // Hiker/obstacle moving towards player
+        MovingHikerInactive = 6,
+        World = 7,
+        Tile = 8
     };
 
     class Entity {

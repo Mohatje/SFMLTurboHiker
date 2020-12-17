@@ -47,7 +47,7 @@ namespace turbohikerSFML {
     void Player::init() {
         playerRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape());
         setSize({0.5, 0.5});
-        setPosition({0, 0});
+        setPosition({-3.5, -2.0});
         setOrigin( { getSize().first / 2.0, getSize().second / 2.0 } );
         playerRect->setTexture(playerTexture.get());
 
@@ -62,8 +62,8 @@ namespace turbohikerSFML {
         auto curVelocity = getVelocity();
 
         // Velocity decay
-        curVelocity.first -= ( curVelocity.first * 12.0 * dTime ); // Skidding for about 125ms after no input
-        curVelocity.second -= ( curVelocity.second * 12.0 * dTime );
+        curVelocity.first -= ( curVelocity.first * 8.0 * dTime ); // Skidding for about 125ms after no input
+        curVelocity.second -= ( curVelocity.second * 8.0 * dTime );
 
 
         if (sf::Keyboard::isKeyPressed(Left)) {

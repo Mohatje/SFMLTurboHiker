@@ -20,6 +20,5 @@ namespace turbohiker {
         return active ? EntityType::StaticHikerActive : EntityType::StaticHikerInactive;
     }
 
-
 }
 

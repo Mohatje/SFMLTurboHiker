@@ -1,6 +1,7 @@
 #include "../assertion.h"
 #include "Game.h"
 #include "PassingHiker1.h"
+#include "PassingHiker2.h"
 #include "TileEntity.h"
 #include "Transformation.h"
 #include <chrono>
@@ -37,7 +38,8 @@ namespace turbohikerSFML {
 
         }
 
-        window->setVerticalSyncEnabled(true);
+        window->setVerticalSyncEnabled(vsync);
+//        window->setFramerateLimit(120);
 
         this->init();
     }
@@ -136,12 +138,23 @@ namespace turbohikerSFML {
     }
 
     void Game::spawnObstacle() {
-        auto obstacleEntity = entFactory->createEntity(turbohiker::EntityType::StaticHikerActive);
-        auto tmp = dynamic_cast<PassingHiker1*> (obstacleEntity.release());
-        tmp->spawn(world->getPlayerPosition().second);
-        obstacleEntity.reset(tmp);
+        auto playerY = world->getPlayerPosition().second;
 
-        world->addEntity(std::move(obstacleEntity));
+        {
+            auto obstacleEntity = entFactory->createEntity(turbohiker::EntityType::StaticHikerActive);
+            auto tmp = dynamic_cast<PassingHiker1 *> (obstacleEntity.release());
+            tmp->spawn(playerY);
+            obstacleEntity.reset(tmp);
+            world->addEntity(std::move(obstacleEntity));
+        }
+
+        {
+            auto movingObstacle = entFactory->createEntity(turbohiker::EntityType::MovingHikerActive);
+            auto tmp = dynamic_cast<PassingHiker2 *> (movingObstacle.release());
+            tmp->spawn(playerY);
+            movingObstacle.reset(tmp);
+            world->addEntity(std::move(movingObstacle));
+        }
     }
 
     void Game::tryToDraw() {
