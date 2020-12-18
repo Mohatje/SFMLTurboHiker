@@ -68,20 +68,20 @@ namespace turbohikerSFML {
 
         if (sf::Keyboard::isKeyPressed(Left)) {
             textureFlipped = true;
-            curVelocity.first -= 0.75;
+            curVelocity.first -= 40.0 * dTime;
         }
 
         if (sf::Keyboard::isKeyPressed(Right)) {
             textureFlipped = false;
-            curVelocity.first += 0.75;
+            curVelocity.first += 40.0 * dTime;
         }
 
         if (sf::Keyboard::isKeyPressed(Down)) {
-            curVelocity.second -= 0.60;
+            curVelocity.second -= 30.0 * dTime;
         }
 
         if (sf::Keyboard::isKeyPressed(Up)) {
-            curVelocity.second += 0.60;
+            curVelocity.second += 30.0 * dTime;
         }
 
         if (sf::Keyboard::isKeyPressed(Yell)) {
@@ -94,8 +94,6 @@ namespace turbohikerSFML {
         else
             anim->update(idleAnimation, dTime, textureFlipped);
 
-        curVelocity.first = std::max(std::min(curVelocity.first, 3.0), -3.0);
-        curVelocity.second = std::max(std::min(curVelocity.second, 2.0), -2.0);
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
 
