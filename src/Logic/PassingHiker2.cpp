@@ -5,7 +5,23 @@
 namespace turbohiker {
     void PassingHiker2::display() {}
 
-    void PassingHiker2::update(float dTime) {}
+    void PassingHiker2::update(float dTime) {
+        auto curVelocity = getVelocity();
+
+        // Velocity decay, analogous to player
+        curVelocity.first -= ( curVelocity.first * 8.0 * dTime );
+        if (getCurState() == turbohiker::EntityAIState::RunL) {
+            curVelocity.first -= 20.0 * dTime;
+        }
+
+        if (getCurState() == turbohiker::EntityAIState::RunR) {
+            curVelocity.first += 20.0 * dTime;
+        }
+
+        setVelocity(curVelocity);
+        move( {curVelocity.first * dTime, curVelocity.second * dTime} );
+        setCurState(EntityAIState::Idle);
+    }
 
     bool PassingHiker2::doTypeSpecificAction() { return false; }
 

@@ -37,13 +37,11 @@ namespace turbohikerSFML {
     }
 
     void PassingHiker2::update(float dTime) {
-        auto curVelocity = getVelocity();
-
-        move( {0.0, curVelocity.second * dTime} );
+        turbohiker::PassingHiker2::update(dTime);
         anim->update(runAnimation, dTime);
-
-
         obstacleRect->setTextureRect(anim->textureRect);
+
+//        setCurState(turbohiker::EntityAIState::Idle);
 
     }
 

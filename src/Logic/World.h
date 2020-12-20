@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include "Player.h"
+#include <deque>
 #include <set>
 #include <vector>
 #include <memory>
@@ -34,22 +35,22 @@ namespace turbohiker {
 
         EntityType getType() const override { return EntityType::World; }
 
-        bool addEntity(EntityRef ent);
-        std::set<EntityRef> &getEntities();
+        void addEntity(EntityRef ent);
+        std::vector<SharedEntityRef> &getEntities();
 
-        bool addTile(EntityRef ent);
-        std::set<EntityRef> &getTiles();
+        void addTile(EntityRef ent);
+        std::vector<SharedEntityRef> &getTiles();
 
         std::pair<double, double> getPlayerSize();
         std::pair<double, double> getPlayerPosition();
         std::pair<double, double> getPlayerVelocity();
-        const std::unique_ptr<Entity> &getPlayerPtr();
+        const SharedEntityRef &getPlayerPtr();
 
         float getSpeed() const;
 
         void setSpeed(float speed);
 
-        bool checkCollision(const EntityRef &entOne, const EntityRef &entTwo);
+        bool checkCollision(const SharedEntityRef &entOne, const SharedEntityRef &entTwo);
 
         virtual bool removeNearestObstacle();
 
@@ -62,9 +63,11 @@ namespace turbohiker {
         void movePlayer(const std::pair<double, double> &offset);
     private:
 
-        std::set<EntityRef> worldEntities;
+        std::vector<SharedEntityRef> worldEntities;
+        std::deque<SharedEntityRef> worldEntityDeque;
+        std::vector<SharedEntityRef> worldTiles;
 
-        std::set<EntityRef> worldTiles;
+        SharedEntityRef player;
 
         float speed = 0.0f;
 

@@ -11,8 +11,7 @@ namespace turbohiker {
     bool World::doTypeSpecificAction() {
         for (uint32_t i = 0; i < worldEntities.size() - 1; i++) {
             for (uint32_t j = i + 1; j < worldEntities.size(); j++) {
-                checkCollision(*std::next(worldEntities.begin(), i),
-                               *std::next(worldEntities.begin(), j));
+                checkCollision(worldEntities[i], worldEntities[j]);
             }
         }
 
@@ -28,6 +27,39 @@ namespace turbohiker {
 
     bool World::removeNearestObstacle() {
         return false;
+    }
+
+    std::ostream& operator<<(std::ostream& out, EntityType e) {
+        switch (e) {
+            case EntityType::Invalid:
+                out << "Invalid";
+                break;
+            case EntityType::Player:
+                out << "Player";
+                break;
+            case EntityType::RacingHiker:
+                out << "RacingHiker";
+                break;
+            case EntityType::StaticHikerActive:
+                out << "StaticHikerActive";
+                break;
+            case EntityType::StaticHikerInactive:
+                out << "StaticHikerInactive";
+                break;
+            case EntityType::MovingHikerActive:
+                out << "MovingHikerActive";
+                break;
+            case EntityType::MovingHikerInactive:
+                out << "MovingHikerInactive";
+                break;
+            case EntityType::World:
+                out << "World";
+                break;
+            case EntityType::Tile:
+                out << "Tile";
+                break;
+        }
+        return out;
     }
 
     double World::getCollisionForce(EntityType typeOne, EntityType typeTwo) {
@@ -53,19 +85,25 @@ namespace turbohiker {
             || (typeTwo == EntityType::MovingHikerActive && typeOne == EntityType::Tile)) {
             return -1.0;
         }
+        if (typeOne == EntityType::StaticHikerActive) return 1.0;
+        if (typeOne == EntityType::MovingHikerActive && typeTwo == EntityType::MovingHikerActive) return 1.0;
 
         // First entity is collider => push everything
         if (typeOne == EntityType::Tile) return 1.0;
 
-        if (typeTwo == EntityType::MovingHikerActive) return 0.75;
-        if (typeOne == EntityType::MovingHikerActive) return 0.25;
+        // First entity is moving hiker, push the rest by .25
+        if (typeOne == EntityType::MovingHikerActive) return 0.60;
+        if (typeTwo == EntityType::MovingHikerActive) return 0.40;
 
         return 0.0;
     }
 
     // AABB collision detecting algo
-    bool World::checkCollision(const EntityRef& entOne, const EntityRef& entTwo) {
+    bool World::checkCollision(const SharedEntityRef& entOne, const SharedEntityRef& entTwo) {
         double collisionForce = getCollisionForce(entOne->getType(), entTwo->getType());
+        if (entOne->getType() == EntityType::StaticHikerActive && entTwo->getType() == EntityType::Player) {
+            std::cerr << collisionForce << std::endl;
+        }
         if (collisionForce < 0.0) return false;
 
         auto onePos = entOne->getPosition();
@@ -85,9 +123,11 @@ namespace turbohiker {
         double intersectY = std::abs(dY) - (oneSize.second + twoSize.second);
 
 
-
+        // there is a collision - intersecting both x and y
         if (intersectX < 0.0 && intersectY < 0.0) {
+            // Push the objects out of each other on the smallest intersect (smaller jump)
             if (std::abs(intersectX) > std::abs(intersectY)) {
+                // Positive delta => entOne is under entTwo
                 if (dY > 0.0) {
                     entOne->move({0.0, -intersectY * (1.0 - collisionForce)});
                     entTwo->move({0.0, intersectY * collisionForce});
@@ -132,20 +172,25 @@ namespace turbohiker {
         }
     }
 
-    bool World::addEntity(EntityRef ent) {
-        return worldEntities.insert(std::move(ent)).second;
+    void World::addEntity(EntityRef ent) {
+        if (ent->getType() == EntityType::Player) {
+            player = std::move(ent);
+            worldEntities.push_back(player);
+        } else {
+            worldEntities.push_back(std::move(ent));
+        }
     }
 
 
-    std::set<World::EntityRef>& World::getEntities() {
+    std::vector<World::SharedEntityRef>& World::getEntities() {
         return worldEntities;
     }
 
-    bool World::addTile(World::EntityRef tile) {
-        return worldTiles.insert(std::move(tile)).second;
+    void World::addTile(EntityRef tile) {
+        worldTiles.push_back(std::move(tile));
     }
 
-    std::set<World::EntityRef> &World::getTiles() {
+    std::vector<World::SharedEntityRef> &World::getTiles() {
         return worldTiles;
     }
 
@@ -168,13 +213,8 @@ namespace turbohiker {
         }
     }
 
-    const std::unique_ptr<Entity>& World::getPlayerPtr() {
-        static const EntityRef null ( nullptr );
-        for (auto& entity : worldEntities) {
-            if (entity->getType() == turbohiker::EntityType::Player)
-                return entity;
-        }
-        return null;
+    const World::SharedEntityRef& World::getPlayerPtr() {
+        return player;
     }
 
     float World::getSpeed() const {
@@ -194,15 +234,20 @@ namespace turbohiker {
     }
 
     void World::removeObstacles(double bottomY) {
-        std::set<EntityRef>::iterator it;
-        for (it = worldEntities.begin(); it != worldEntities.end(); it++) {
-            if ((*it)->getPosition().second < bottomY) {
-                worldEntities.erase(it);
+        for (int i = 0; i < worldEntities.size();) {
+            if (worldEntities[i]->getPosition().second < bottomY) {
+                worldEntities[i].reset();
+                worldEntities.erase(worldEntities.begin() + i);
+            } else {
+                i++;
             }
         }
-        for (it = worldTiles.begin(); it != worldTiles.end(); it++) {
-            if ((*it)->getPosition().second < bottomY) {
-                worldTiles.erase(it);
+        for (int i = 0; i < worldTiles.size();) {
+            if (worldTiles[i]->getPosition().second < bottomY) {
+                worldTiles[i].reset();
+                worldTiles.erase(worldTiles.begin() + i);
+            } else {
+                i++;
             }
         }
     }

@@ -28,7 +28,8 @@ ADD_LIBRARY(TurboHikerLogic STATIC
             src/Logic/Player.cpp
             src/Logic/World.cpp
             src/Logic/PassingHiker1.cpp
-            src/Logic/PassingHiker2.cpp)
+            src/Logic/PassingHiker2.cpp
+            src/Logic/GameAI.cpp)
 
 ADD_LIBRARY(INIConfiguration STATIC
             src/Parser/ini_configuration.cc src/assertion.h)

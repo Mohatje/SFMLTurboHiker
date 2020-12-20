@@ -34,4 +34,25 @@ namespace turbohiker {
     void Entity::setOrigin(const std::pair<double, double> &_origin) {
         this->origin = _origin;
     }
+
+    EntityAIState Entity::getCurState() const {
+        return curState;
+    }
+
+    void Entity::setCurState(EntityAIState _curState) {
+        this->curState = _curState;
+    }
+
+    void Entity::addState(EntityAIState _curState) {
+        stateStack.push(_curState);
+    }
+
+    std::stack<EntityAIState>& Entity::getStates() {
+        return stateStack;
+    }
+
+    Entity::Entity() {
+        stateStack.push(EntityAIState::Idle);
+    }
+
 }

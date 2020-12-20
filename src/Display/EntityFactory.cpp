@@ -15,7 +15,7 @@ namespace turbohikerSFML {
 
     std::unique_ptr<turbohiker::Entity> EntityFactory::createEntity(turbohiker::EntityType ent) {
         std::weak_ptr<sf::RenderWindow> weakPtrWindow = window;
-        std::unique_ptr<turbohiker::Entity> entity;;
+        std::unique_ptr<turbohiker::Entity> entity;
         switch (ent) {
             case turbohiker::EntityType::Invalid:
                 entity = nullptr;

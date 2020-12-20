@@ -31,10 +31,10 @@ namespace turbohikerSFML {
         textureRect.top = currentImage.y * textureRect.height;
         if (flip) {
             textureRect.left = (currentImage.x + 1) * abs(textureRect.width);
-            textureRect.width = -abs(textureRect.width);
+            textureRect.width = -std::abs(textureRect.width);
         } else {
             textureRect.left = currentImage.x * textureRect.width;
-            textureRect.width = abs(textureRect.width);
+            textureRect.width = std::abs(textureRect.width);
         }
 
     }

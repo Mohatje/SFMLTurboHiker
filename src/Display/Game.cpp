@@ -39,7 +39,6 @@ namespace turbohikerSFML {
         }
 
         window->setVerticalSyncEnabled(vsync);
-//        window->setFramerateLimit(120);
 
         this->init();
     }
@@ -52,9 +51,8 @@ namespace turbohikerSFML {
         if (worldEnt->getType() != turbohiker::EntityType::World)
             std::cerr << "Factory did not return a World entity." << std::endl;
 
-        auto temp = dynamic_cast<World*> (worldEnt.get());
+        auto temp = dynamic_cast<World*> (worldEnt.release());
         ASSERT(temp != nullptr, "World pointer is not a valid World object.")
-        worldEnt.release();
         world.reset(temp);
 
         world->addEntity(entFactory->createEntity(turbohiker::EntityType::Player));
@@ -62,11 +60,6 @@ namespace turbohikerSFML {
         gameView.setSize(static_cast<sf::Vector2f> (window->getSize()));
         gameView.setCenter(static_cast<sf::Vector2f> (window->getSize()) / 2.0f);
 
-        // Invisible collider at bottom of map
-        std::string tileSetPath = config["World"]["Transparent"].as_string_or_die();
-        auto transparent = std::make_shared<sf::Texture> (  );
-        if (!transparent->loadFromFile(tileSetPath))
-            std::cerr << "Cannot load transparent texture " << tileSetPath << ". Please check the configuration file." << std::endl;
 
         auto bottomCollider = EntityRef (new TileEntity(window, {0.0, -3}, {8, 0.25},
                                                         nullptr, {0, 0}));
@@ -75,17 +68,19 @@ namespace turbohikerSFML {
                                   nullptr, {0, 0}));
 
 
-        auto rightCollider = EntityRef (new TileEntity(window, { 4, 0}, {0.5, 8},
+        auto rightCollider = EntityRef (new TileEntity(window, { 4.25, 0}, {1.0, 8},
                                                       nullptr, {0, 0}));
 
-        auto leftCollider = EntityRef (new TileEntity(window, { -4, 0}, {0.5, 8},
+        auto leftCollider = EntityRef (new TileEntity(window, { -4.25, 0}, {1.0, 8},
                                                       nullptr, {0, 0}));
         world->addEntity(std::move(bottomCollider));
         world->addEntity(std::move(topCollider));
         world->addEntity(std::move(leftCollider));
         world->addEntity(std::move(rightCollider));
 
+        auto thWorld = std::static_pointer_cast<turbohiker::World> (world);
 
+        auto& AI = turbohiker::GameAI::instantiateAI(thWorld);
         generateMap();
 
     }
@@ -128,9 +123,11 @@ namespace turbohikerSFML {
         
         world->removeObstacles(yCoordB - 5.0);
 
-        if (world->getPlayerPosition().second < yCoordB || world->getPlayerPosition().second > yCoordT) {
+        if (world->getPlayerPosition().second < yCoordB) {
             std::cout << "Game Over!" << world->getPlayerPosition().first << ", " << world->getPlayerPosition().second << std::endl;
-            world->movePlayer( { 0.0, 0.5 } );
+            world->getPlayerPtr()->setVelocity( {0.0, 0.0} );
+            world->getPlayerPtr()->setPosition( {world->getPlayerPosition().first, yCoordB + 0.5} );
+//            world->movePlayer( { 0.0, 0.5 } );
         }
 
         gameView.move(0, -world->getSpeed() * dTime);
@@ -168,16 +165,20 @@ namespace turbohikerSFML {
     }
 
     void Game::run() {
-        static double timer = 0.0;
+        double timer = 0.0;
+        double updateTimer = 0.0;
+        const double fixedDelta = 1.0/75.0;
         using clock = std::chrono::high_resolution_clock;
         float dTime;
         auto last = clock::now();
         sf::Event ev{};
-
+        bool spawn = true;
         while (window->isOpen()) {
             while (window->pollEvent(ev)) {
                 if (ev.type == sf::Event::Closed) {
                     window->close();
+                } else if (ev.type == sf::Event::KeyReleased && ev.key.code == sf::Keyboard::G) {
+                    spawn = !spawn;
                 }
                 world->handleGameEvent(ev);
             }
@@ -186,17 +187,25 @@ namespace turbohikerSFML {
             dTime = std::chrono::duration_cast<std::chrono::duration<float>>(now - last).count();
             last = now;
             timer += dTime;
+            updateTimer += dTime;
 
             if (timer >= 1.0) {
                 timer = 0;
-                spawnObstacle();
+                if (spawn)
+                    spawnObstacle();
+            }
+
+            while (updateTimer >= fixedDelta) {
+                world->update(float(fixedDelta));
+                world->doTypeSpecificAction();
+                tryToDraw();
+                calculateView(float(fixedDelta));
+
+                updateTimer -= fixedDelta;
+
             }
 
             window->clear(sf::Color::Magenta);
-            world->update(dTime);
-            world->doTypeSpecificAction();
-            tryToDraw();
-            calculateView(dTime);
             window->setView(gameView);
             world->display();
             window->display();

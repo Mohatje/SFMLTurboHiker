@@ -50,7 +50,6 @@ namespace turbohikerSFML {
         setPosition({-3.5, -2.0});
         setOrigin( { getSize().first / 2.0, getSize().second / 2.0 } );
         playerRect->setTexture(playerTexture.get());
-
     }
 
     void Player::display() {
@@ -67,12 +66,10 @@ namespace turbohikerSFML {
 
 
         if (sf::Keyboard::isKeyPressed(Left)) {
-            textureFlipped = true;
             curVelocity.first -= 40.0 * dTime;
         }
 
         if (sf::Keyboard::isKeyPressed(Right)) {
-            textureFlipped = false;
             curVelocity.first += 40.0 * dTime;
         }
 
@@ -88,11 +85,14 @@ namespace turbohikerSFML {
             playerSound->play();
         }
 
+        textureFlipped = curVelocity.first < 0.0;
 
+        float animModifier = std::abs(curVelocity.second) > 1.f ? std::abs(curVelocity.second) : 1.f;
+        animModifier = animModifier > std::abs(curVelocity.first) ? animModifier : std::abs(curVelocity.first);
         if ((std::abs(curVelocity.first) > 1.0f) || (std::abs(curVelocity.second) > 1.0f) )
-            anim->update(runAnimation, dTime, textureFlipped);
+            anim->update(runAnimation, dTime * animModifier, textureFlipped);
         else
-            anim->update(idleAnimation, dTime, textureFlipped);
+            anim->update(idleAnimation, dTime * animModifier, textureFlipped);
 
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
