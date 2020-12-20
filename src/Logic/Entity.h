@@ -8,9 +8,12 @@ namespace turbohiker {
         Invalid = 0,
         Default = 1,
         SpeedUp = 2,
-        RunR = 3,
-        RunL = 4,
-        Idle = 5
+        SlowDown = 3,
+        RunR = 4,
+        RunL = 5,
+        Yell = 6,
+        UnYell = 7,
+        Idle = 8
     };
 
     enum class EntityType {

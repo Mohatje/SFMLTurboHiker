@@ -1,6 +1,7 @@
 #include "EntityFactory.h"
 #include "../Logic/HelperFunctions.h"
 #include "Player.h"
+#include "RacingHiker.h"
 #include "PassingHiker1.h"
 #include "PassingHiker2.h"
 #include "World.h"
@@ -24,6 +25,7 @@ namespace turbohikerSFML {
                 entity = std::unique_ptr<turbohiker::Entity> (new Player(weakPtrWindow, config));
                 break;
             case turbohiker::EntityType::RacingHiker:
+                entity = std::unique_ptr<turbohiker::Entity> (new RacingHiker(weakPtrWindow, config));
                 break;
             case turbohiker::EntityType::StaticHikerActive:
                 entity = std::unique_ptr<turbohiker::Entity> (new PassingHiker1(weakPtrWindow, config));

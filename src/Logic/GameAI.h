@@ -34,6 +34,7 @@ namespace turbohiker {
          */
         std::vector<std::shared_ptr<Entity>> getEntitiesInSight(std::shared_ptr<Entity> &hiker);
 
+        void avoidObstacle(std::shared_ptr<Entity> &hiker, std::shared_ptr<Entity> &ent);
     };
 
 }

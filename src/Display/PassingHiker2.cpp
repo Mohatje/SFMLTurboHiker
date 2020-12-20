@@ -41,7 +41,6 @@ namespace turbohikerSFML {
         anim->update(runAnimation, dTime);
         obstacleRect->setTextureRect(anim->textureRect);
 
-//        setCurState(turbohiker::EntityAIState::Idle);
 
     }
 

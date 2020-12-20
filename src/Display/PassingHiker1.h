@@ -23,6 +23,7 @@ namespace turbohikerSFML {
         void setSize(const std::pair<double, double> &_size) override;
 
         void setOrigin(const std::pair<double, double> &_origin) override;
+        void setActive(bool _active) override;
     private:
         std::weak_ptr<sf::RenderWindow> _window;
         static std::unique_ptr<sf::Texture> obstacleTexture;

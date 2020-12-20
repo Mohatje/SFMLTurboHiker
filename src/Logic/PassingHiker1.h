@@ -11,7 +11,7 @@ namespace turbohiker {
 
         bool isActive() const;
 
-        void setActive(bool active);
+        virtual void setActive(bool active);
 
         EntityType getType() const override;
     private:

@@ -16,53 +16,26 @@ namespace turbohiker {
         }
 
         for (auto& ent : worldEntities) {
-            bool entAction = ent->doTypeSpecificAction();
-            if (ent->getType() == EntityType::Player && entAction && hasYelled()) {
-                yelled = false;
-                removeNearestObstacle();
+            if (ent->getType() == EntityType::Player || ent->getType() == EntityType::RacingHiker) {
+                bool entAction = ent->doTypeSpecificAction();
+                if (entAction) {
+                    ent->setCurState(EntityAIState::UnYell);
+                    if (yelled) {
+                        yelled = false;
+                        removeNearestObstacle(ent->getPosition());
+                    }
+                }
             }
         }
         return false;
     }
 
-    bool World::removeNearestObstacle() {
+    bool World::removeNearestObstacle(const std::pair<double, double> &entPos) {
         return false;
     }
 
-    std::ostream& operator<<(std::ostream& out, EntityType e) {
-        switch (e) {
-            case EntityType::Invalid:
-                out << "Invalid";
-                break;
-            case EntityType::Player:
-                out << "Player";
-                break;
-            case EntityType::RacingHiker:
-                out << "RacingHiker";
-                break;
-            case EntityType::StaticHikerActive:
-                out << "StaticHikerActive";
-                break;
-            case EntityType::StaticHikerInactive:
-                out << "StaticHikerInactive";
-                break;
-            case EntityType::MovingHikerActive:
-                out << "MovingHikerActive";
-                break;
-            case EntityType::MovingHikerInactive:
-                out << "MovingHikerInactive";
-                break;
-            case EntityType::World:
-                out << "World";
-                break;
-            case EntityType::Tile:
-                out << "Tile";
-                break;
-        }
-        return out;
-    }
-
     double World::getCollisionForce(EntityType typeOne, EntityType typeTwo) {
+        if (typeOne == EntityType::RacingHiker && typeTwo == EntityType::RacingHiker) return 0.5;
 
         // Two static obstacles
         if (typeOne == EntityType::StaticHikerActive && typeTwo == EntityType::StaticHikerActive) return -1.0;
@@ -94,6 +67,9 @@ namespace turbohiker {
         // First entity is moving hiker, push the rest by .25
         if (typeOne == EntityType::MovingHikerActive) return 0.60;
         if (typeTwo == EntityType::MovingHikerActive) return 0.40;
+        if (typeOne == EntityType::Player && typeTwo == EntityType::RacingHiker) return 0.5;
+        if (typeOne == EntityType::RacingHiker && typeTwo == EntityType::Player) return 0.5;
+
 
         return 0.0;
     }

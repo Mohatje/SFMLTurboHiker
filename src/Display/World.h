@@ -14,7 +14,7 @@ namespace turbohikerSFML {
 
         void update(float dTime) override;
         void handleGameEvent(sf::Event &event);
-        bool removeNearestObstacle() override;
+        bool removeNearestObstacle(const std::pair<double, double> &distPos) override;
 
     private:
         sf::Keyboard::Key speedToggle;

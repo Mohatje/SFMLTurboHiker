@@ -3,6 +3,7 @@
 #include "PassingHiker2.h"
 #include "HelperFunctions.h"
 #include "Player.h"
+#include "RacingHiker.h"
 #include "World.h"
 
 namespace turbohiker {
@@ -15,6 +16,7 @@ namespace turbohiker {
                 entity = std::unique_ptr<Entity> (new Player());
                 break;
             case EntityType::RacingHiker:
+                entity = std::unique_ptr<Entity> (new RacingHiker());
                 break;
             case EntityType::StaticHikerActive:
                 entity = std::unique_ptr<Entity> (new PassingHiker1());

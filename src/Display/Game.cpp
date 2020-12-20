@@ -60,16 +60,46 @@ namespace turbohikerSFML {
         gameView.setSize(static_cast<sf::Vector2f> (window->getSize()));
         gameView.setCenter(static_cast<sf::Vector2f> (window->getSize()) / 2.0f);
 
+        addRacers();
+        addColliders();
 
+        auto thWorld = std::static_pointer_cast<turbohiker::World> (world);
+
+        auto& AI = turbohiker::GameAI::instantiateAI(thWorld);
+        generateMap();
+
+    }
+
+    void Game::addRacers() {
+        auto firstRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
+        firstRacer->setPosition( {-2.5, -2.0} );
+        auto secondRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
+        secondRacer->setPosition( {-1.5, -2.0} );
+        auto thirdRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
+        thirdRacer->setPosition( {-0.5, -2.0} );
+        auto forthRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
+        forthRacer->setPosition( {0.5, -2.0} );
+        auto fifthRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
+        fifthRacer->setPosition( {1.5, -2.0} );
+
+        world->addEntity(std::move(firstRacer));
+        world->addEntity(std::move(secondRacer));
+        world->addEntity(std::move(thirdRacer));
+        world->addEntity(std::move(forthRacer));
+        world->addEntity(std::move(fifthRacer));
+
+    }
+
+    void Game::addColliders() {
         auto bottomCollider = EntityRef (new TileEntity(window, {0.0, -3}, {8, 0.25},
                                                         nullptr, {0, 0}));
 
         auto topCollider = EntityRef (new TileEntity(window, {0.0, 3}, {8, 0.50},
-                                  nullptr, {0, 0}));
+                                                     nullptr, {0, 0}));
 
 
         auto rightCollider = EntityRef (new TileEntity(window, { 4.25, 0}, {1.0, 8},
-                                                      nullptr, {0, 0}));
+                                                       nullptr, {0, 0}));
 
         auto leftCollider = EntityRef (new TileEntity(window, { -4.25, 0}, {1.0, 8},
                                                       nullptr, {0, 0}));
@@ -77,12 +107,6 @@ namespace turbohikerSFML {
         world->addEntity(std::move(topCollider));
         world->addEntity(std::move(leftCollider));
         world->addEntity(std::move(rightCollider));
-
-        auto thWorld = std::static_pointer_cast<turbohiker::World> (world);
-
-        auto& AI = turbohiker::GameAI::instantiateAI(thWorld);
-        generateMap();
-
     }
 
     void Game::generateMap() {
@@ -119,18 +143,19 @@ namespace turbohikerSFML {
         float yTop = gameView.getCenter().y - window->getSize().y / 2.0f;
 
         double yCoordB = Transformation::convertPosFromPixels(*window, {0, yBottom}).second;
-        double yCoordT = Transformation::convertPosFromPixels(*window, {0, yTop}).second;
-        
+
         world->removeObstacles(yCoordB - 5.0);
 
-        if (world->getPlayerPosition().second < yCoordB) {
-            std::cout << "Game Over!" << world->getPlayerPosition().first << ", " << world->getPlayerPosition().second << std::endl;
-            world->getPlayerPtr()->setVelocity( {0.0, 0.0} );
-            world->getPlayerPtr()->setPosition( {world->getPlayerPosition().first, yCoordB + 0.5} );
-//            world->movePlayer( { 0.0, 0.5 } );
+        for (auto& ent : world->getEntities()) {
+            if (ent->getType() != turbohiker::EntityType::Player && ent->getType() != turbohiker::EntityType::RacingHiker) continue;
+            auto entPos = ent->getPosition();
+            if (ent->getPosition().second < yCoordB) {
+                std::cout << "Game Over!" << entPos.first << ", " << entPos.second << std::endl;
+                ent->setVelocity( {0.0, 0.0} );
+                ent->setPosition( {entPos.first, yCoordB + 0.5} );
+            }
         }
 
-        gameView.move(0, -world->getSpeed() * dTime);
 
     }
 
@@ -200,6 +225,7 @@ namespace turbohikerSFML {
                 world->doTypeSpecificAction();
                 tryToDraw();
                 calculateView(float(fixedDelta));
+                gameView.move(0, -world->getSpeed() * float(fixedDelta));
 
                 updateTimer -= fixedDelta;
 

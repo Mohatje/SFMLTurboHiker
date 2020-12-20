@@ -52,7 +52,7 @@ namespace turbohiker {
 
         bool checkCollision(const SharedEntityRef &entOne, const SharedEntityRef &entTwo);
 
-        virtual bool removeNearestObstacle();
+        virtual bool removeNearestObstacle(const std::pair<double, double> &entPos);
 
         bool hasYelled() const;
 

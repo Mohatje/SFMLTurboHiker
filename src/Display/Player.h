@@ -34,7 +34,7 @@ namespace turbohikerSFML {
         std::unique_ptr<sf::RectangleShape> playerRect;
         bool textureFlipped = false;
 
-        int idleAnimation;
+        bool action = false;
         int runAnimation;
 
         sf::Keyboard::Key Left;

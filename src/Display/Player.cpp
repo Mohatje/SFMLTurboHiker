@@ -29,7 +29,6 @@ namespace turbohikerSFML {
         unsigned int cols = configFile["Player"]["ColumnCount"].as_int_or_default(1);
         float frameTime = configFile["Player"]["FrameTime"].as_double_or_default(1.0 / cols);
 
-        idleAnimation = configFile["Player"]["IdleAnimation"].as_int_or_default(0);
         runAnimation = configFile["Player"]["RunAnimation"].as_int_or_default(1);
 
         // Player controls
@@ -54,7 +53,6 @@ namespace turbohikerSFML {
 
     void Player::display() {
         _window.lock()->draw(*playerRect);
-
     }
 
     void Player::update(float dTime) {
@@ -83,17 +81,25 @@ namespace turbohikerSFML {
 
         if (sf::Keyboard::isKeyPressed(Yell)) {
             playerSound->play();
+            action = true;
+        }
+
+        if (getCurState() == turbohiker::EntityAIState::UnYell) {
+            action = false;
+            setCurState(turbohiker::EntityAIState::Idle);
         }
 
         textureFlipped = curVelocity.first < 0.0;
 
         float animModifier = std::abs(curVelocity.second) > 1.f ? std::abs(curVelocity.second) : 1.f;
         animModifier = animModifier > std::abs(curVelocity.first) ? animModifier : std::abs(curVelocity.first);
-        if ((std::abs(curVelocity.first) > 1.0f) || (std::abs(curVelocity.second) > 1.0f) )
-            anim->update(runAnimation, dTime * animModifier, textureFlipped);
-        else
-            anim->update(idleAnimation, dTime * animModifier, textureFlipped);
 
+//        if ((std::abs(curVelocity.first) > 1.0f) || (std::abs(curVelocity.second) > 1.0f) )
+//            anim->update(, dTime * animModifier, textureFlipped);
+//        else
+//            anim->update(idleAnimation, dTime * animModifier, textureFlipped);
+
+        anim->update(runAnimation, dTime * animModifier, textureFlipped);
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
 
@@ -103,7 +109,7 @@ namespace turbohikerSFML {
     }
 
     bool Player::doTypeSpecificAction() {
-        return true;
+        return action;
     }
 
     void Player::move(const std::pair<double, double> &offset) {

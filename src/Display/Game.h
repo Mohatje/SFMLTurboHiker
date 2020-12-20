@@ -44,6 +44,8 @@ namespace turbohikerSFML {
 
         void tryToDraw();
         void spawnObstacle();
+        void addColliders();
+        void addRacers();
     };
 
 }

@@ -2,11 +2,8 @@
 
 
 namespace turbohikerSFML {
-    Animation::Animation(std::shared_ptr<sf::Texture> &texture, sf::Vector2u imageCount,
-                                         float _frameTime) {
-        this->imageCount = imageCount;
-        this->frameTime = _frameTime;
-
+    Animation::Animation(std::shared_ptr<sf::Texture> &texture, sf::Vector2u imageCount, float _frameTime) :
+                                                             imageCount(imageCount), frameTime(_frameTime) {
         elapsedTime = 0.f;
         currentImage.x = 0;
 
@@ -28,14 +25,14 @@ namespace turbohikerSFML {
                 currentImage.x = 0;
         }
 
-        textureRect.top = currentImage.y * textureRect.height;
         if (flip) {
-            textureRect.left = (currentImage.x + 1) * abs(textureRect.width);
             textureRect.width = -std::abs(textureRect.width);
+            textureRect.left = (currentImage.x + 1) * abs(textureRect.width);
         } else {
-            textureRect.left = currentImage.x * textureRect.width;
             textureRect.width = std::abs(textureRect.width);
+            textureRect.left = currentImage.x * textureRect.width;
         }
+        textureRect.top = currentImage.y * textureRect.height;
 
     }
 

@@ -52,10 +52,6 @@ namespace turbohikerSFML {
     }
 
     bool PassingHiker1::doTypeSpecificAction() {
-        if (!isActive()) {
-            obstacleRect->setTextureRect(inactiveRect);
-            return true;
-        }
         return false;
     }
 
@@ -86,6 +82,12 @@ namespace turbohikerSFML {
     }
 
     void PassingHiker1::move(const std::pair<double, double> &offset) {
+    }
+
+    void PassingHiker1::setActive(bool _active) {
+        turbohiker::PassingHiker1::setActive(_active);
+        if (!isActive())
+            obstacleRect->setTextureRect(inactiveRect);
     }
 }
 
