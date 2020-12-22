@@ -60,7 +60,8 @@ namespace turbohiker {
 
         void setYelled(bool yelled);
 
-        void movePlayer(const std::pair<double, double> &offset);
+        void clearEntitiesAbove(double yConstraint);
+
     private:
 
         std::vector<SharedEntityRef> worldEntities;

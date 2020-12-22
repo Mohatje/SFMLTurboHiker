@@ -7,6 +7,7 @@ namespace turbohiker {
     void RacingHiker::display() {   }
 
     void RacingHiker::update(float dTime) {
+        auto curPosition = getPosition();
         auto curVelocity = getVelocity();
 
         // Velocity decay, analogous to player
@@ -21,11 +22,11 @@ namespace turbohiker {
             curVelocity.second -= 30.0 * dTime;
         }
 
-        if (getCurState() == EntityAIState::RunL) {
+        if (getCurState() == EntityAIState::RunL || isMovingL) {
             curVelocity.first -= 20.0 * dTime;
         }
 
-        if (getCurState() == EntityAIState::RunR) {
+        if (getCurState() == EntityAIState::RunR || isMovingR) {
             curVelocity.first += 20.0 * dTime;
         }
 
@@ -36,14 +37,33 @@ namespace turbohiker {
         if (getCurState() == EntityAIState::UnYell) {
             action = false;
         }
-
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
+
+
+
+        auto posAfter = getPosition();
+        double dx = posAfter.first - curPosition.first;
+        double dy = posAfter.second - curPosition.second;
+        if (std::abs(dx) < 0.05) {
+
+        }
+        if (std::abs(dy) < 0.02) {
+
+        }
         setCurState(EntityAIState::Idle);
     }
 
     bool RacingHiker::doTypeSpecificAction() {
         return action;
+    }
+
+    void RacingHiker::printState(char* pretext) {
+        printf("%s\n", pretext);
+        printf("Stuck %d\n", getCurState() == EntityAIState::Stuck);
+        printf("MovingR %d\n", isMovingR);
+        printf("MovingL %d\n", isMovingL);
+        printf("CurPosition: %.3f, %.3f\n\n", getPosition().first, getPosition().second);
     }
 
 }

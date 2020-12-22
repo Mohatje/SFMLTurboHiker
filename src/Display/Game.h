@@ -34,18 +34,22 @@ namespace turbohikerSFML {
         std::shared_ptr<sf::Texture> tileSet;
         sf::View gameView;
 
-
+        bool finishDrawn = false;
         double lastDrawnY = 3.0;
+        double finishLine = 0.0;
 
     private:
         void generateMap();
-        void calculateView(float dTime);
+        void correctOutOfBounds();
         void generateStrip(sf::Vector2u Left, sf::Vector2u Middle, sf::Vector2u Right, double y);
 
         void tryToDraw();
         void spawnObstacle();
         void addColliders();
         void addRacers();
+        void spawnFinishLine();
+
+        void calculateView(float dTime);
     };
 
 }

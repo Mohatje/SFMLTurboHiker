@@ -12,7 +12,8 @@ namespace turbohikerSFML {
                    std::pair<double, double> position,
                    std::pair<double, double> size,
                    std::shared_ptr<sf::Texture> texture,
-                   sf::Vector2u texPosition);
+                   sf::Vector2u texPosition,
+                   bool stationary = false);
 
 
         void display() override;
@@ -27,12 +28,16 @@ namespace turbohikerSFML {
         void setSize(const std::pair<double, double> &_size) override;
         void setOrigin(const std::pair<double, double> &_origin) override;
 
+        void setStatic(bool _static);
+
     private:
         std::weak_ptr<sf::RenderWindow> _window;
         std::shared_ptr<sf::Texture> tileSet;
         std::unique_ptr<sf::RectangleShape> tileRect;
 
         void init(std::pair<double, double> position, std::pair<double, double> size);
+
+        bool stationary;
     };
 
 }

@@ -8,7 +8,8 @@ namespace turbohikerSFML {
                            std::pair<double, double> position,
                            std::pair<double, double> size,
                            std::shared_ptr<sf::Texture> texture,
-                           sf::Vector2u texPosition) : _window(window), tileSet(texture) {
+                           sf::Vector2u texPosition,
+                           bool stationary) : _window(window), tileSet(texture), stationary(stationary) {
 
         tileRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape(  ));
         if (texture == nullptr) {
@@ -57,9 +58,14 @@ namespace turbohikerSFML {
     }
 
     void TileEntity::move(const std::pair<double, double>& offset) {
+        if (stationary) return;
         Entity::move(offset);
         auto newPos = Transformation::convertPosToPixels(*_window.lock(), getPosition());
 
         tileRect->setPosition(newPos);
+    }
+
+    void TileEntity::setStatic(bool _static) {
+        stationary = _static;
     }
 }

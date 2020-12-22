@@ -11,5 +11,9 @@ namespace turbohiker {
         EntityType getType() const override { return EntityType::RacingHiker; }
     private:
         bool action = false;
+        bool isMovingR = false;
+        bool isMovingL = false;
+
+        void printState(char* pretext);
     };
 }

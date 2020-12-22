@@ -182,13 +182,6 @@ namespace turbohiker {
         return getPlayerPtr()->getVelocity();
     }
 
-    void World::movePlayer(const std::pair<double, double>& offset) {
-        for (auto& entity : worldEntities) {
-            if (entity->getType() == turbohiker::EntityType::Player)
-                entity->move(offset);
-        }
-    }
-
     const World::SharedEntityRef& World::getPlayerPtr() {
         return player;
     }
@@ -222,6 +215,17 @@ namespace turbohiker {
             if (worldTiles[i]->getPosition().second < bottomY) {
                 worldTiles[i].reset();
                 worldTiles.erase(worldTiles.begin() + i);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    void World::clearEntitiesAbove(double yConstraint) {
+        for (int i = 0; i < worldEntities.size();) {
+            if (worldEntities[i]->getPosition().second > yConstraint) {
+                worldEntities[i].reset();
+                worldEntities.erase(worldEntities.begin() + i);
             } else {
                 i++;
             }

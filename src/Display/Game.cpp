@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "PassingHiker1.h"
 #include "PassingHiker2.h"
+#include "../Logic/Random.h"
 #include "TileEntity.h"
 #include "Transformation.h"
 #include <chrono>
@@ -138,7 +139,7 @@ namespace turbohikerSFML {
 
     }
 
-    void Game::calculateView(float dTime) {
+    void Game::correctOutOfBounds() {
         float yBottom = gameView.getCenter().y + window->getSize().y / 2.0f;
         float yTop = gameView.getCenter().y - window->getSize().y / 2.0f;
 
@@ -155,8 +156,10 @@ namespace turbohikerSFML {
                 ent->setPosition( {entPos.first, yCoordB + 0.5} );
             }
         }
+    }
 
-
+    void Game::spawnFinishLine() {
+        std::cerr << "Spawned finish line " << std::endl;
     }
 
     void Game::spawnObstacle() {
@@ -187,17 +190,62 @@ namespace turbohikerSFML {
             lastDrawnY += 0.5;
             generateStrip({2, 4}, {11, 4}, {0, 4}, lastDrawnY);
         }
+
+        if (finishDrawn) {
+            for (uint8_t i = 0; i < 11; i++) {
+                lastDrawnY += 0.5;
+                generateStrip({2, 4}, {11, 4}, {0, 4}, lastDrawnY);
+            }
+
+            world->clearEntitiesAbove(lastDrawnY);
+
+            {
+                lastDrawnY += 0.5;
+                generateStrip({3, 3}, {1, 5}, {4, 3}, lastDrawnY);
+
+                lastDrawnY += 0.5;
+                generateStrip({6, 4}, {6, 4}, {6, 4}, lastDrawnY);
+                generateStrip({11, 0}, {11, 0}, {11, 0}, lastDrawnY);
+
+                // Finish collider
+                auto finishCollider = EntityRef ( new TileEntity (window, { 0.0, lastDrawnY + 5.5}, {8.0, 10.0},
+                                                              nullptr, {0, 0}, true) );
+
+                world->addEntity(std::move(finishCollider));
+                finishLine = lastDrawnY + 0.5;
+
+                std::cout << "PlayerY " << world->getPlayerPosition().second << "\t lastDrawnY " << lastDrawnY << std::endl;
+
+                lastDrawnY += 0.5;
+                generateStrip({6, 3}, {6, 3}, {6, 3}, lastDrawnY);
+            }
+
+            for (uint8_t i = 0; i < 11; i++) {
+                lastDrawnY += 0.5;
+                generateStrip({1, 2}, {1, 2}, {1, 2}, lastDrawnY);
+            }
+
+            lastDrawnY += 25;
+            finishDrawn = false;
+        }
     }
 
     void Game::run() {
+        using clock = std::chrono::high_resolution_clock;
+
+
         double timer = 0.0;
+        double finishTimer = 0.0;
         double updateTimer = 0.0;
         const double fixedDelta = 1.0/75.0;
-        using clock = std::chrono::high_resolution_clock;
+
+
         float dTime;
         auto last = clock::now();
         sf::Event ev{};
         bool spawn = true;
+
+        double timeToFinish = 10.0 + turbohiker::Random::randFloat(-5.f, 10.f);
         while (window->isOpen()) {
             while (window->pollEvent(ev)) {
                 if (ev.type == sf::Event::Closed) {
@@ -213,6 +261,7 @@ namespace turbohikerSFML {
             last = now;
             timer += dTime;
             updateTimer += dTime;
+            finishTimer += dTime;
 
             if (timer >= 1.0) {
                 timer = 0;
@@ -220,12 +269,20 @@ namespace turbohikerSFML {
                     spawnObstacle();
             }
 
+            if (timeToFinish > -1.0 && finishTimer >= timeToFinish) {
+                timeToFinish = -1.0;
+                finishDrawn = true;
+                spawnFinishLine();
+                spawn = false;
+            }
+
             while (updateTimer >= fixedDelta) {
                 world->update(float(fixedDelta));
                 world->doTypeSpecificAction();
                 tryToDraw();
+                correctOutOfBounds();
                 calculateView(float(fixedDelta));
-                gameView.move(0, -world->getSpeed() * float(fixedDelta));
+
 
                 updateTimer -= fixedDelta;
 
@@ -235,6 +292,15 @@ namespace turbohikerSFML {
             window->setView(gameView);
             world->display();
             window->display();
+        }
+    }
+
+    void Game::calculateView(float dTime) {
+        float convertedFinish = Transformation::convertPosToPixels( *window, {0.0, finishLine + 2} ).y;
+        if (finishLine <= 0.0 || gameView.getCenter().y > convertedFinish) {
+            gameView.move(0, -world->getSpeed() * dTime);
+        } else {
+            world->setSpeed( 0.f );
         }
     }
 }

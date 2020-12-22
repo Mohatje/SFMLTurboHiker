@@ -74,7 +74,6 @@ namespace turbohiker {
 
     void GameAI::_updateRacer(std::shared_ptr<Entity>& hiker, float dTime) {
         auto toObserve = getEntitiesInSight(hiker);
-        if (toObserve.empty()) return;
 
         auto onePos = hiker->getPosition();
         auto oneSize = hiker->getSize();
@@ -87,6 +86,10 @@ namespace turbohiker {
 
             return st->getPosition().second < nd->getPosition().second;
         });
+
+        if (hiker->getCurState() != EntityAIState::Idle) {
+            return;
+        }
 
         for (auto &ent : toObserve) {
             if (    !(ent->getType() == EntityType::StaticHikerActive ||
@@ -109,14 +112,10 @@ namespace turbohiker {
         }
 
         float chanceSpeedup;
-
-        if (hiker->getPosition().second < playerPos.second) {
-            chanceSpeedup = 0.60f;
-        } else if (hiker->getPosition().second > playerPos.second) {
-            chanceSpeedup = 0.40f;
-        } else {
-            chanceSpeedup = 0.50f;
-        }
+        float distanceToPlayer = playerPos.second - hiker->getPosition().second;
+        float chance = std::min( ((30.f / 4.f) * std::abs(distanceToPlayer)) + 0.3f, 1.f);
+        chanceSpeedup = distanceToPlayer < 0.f ? 1.0f - chance : chance;
+        if (std::abs(distanceToPlayer) < 1.5) chanceSpeedup = 0.5;
 
         auto rnd = Random::randFloat(0.f, 1.f);
         if (rnd < chanceSpeedup) {
