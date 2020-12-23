@@ -5,9 +5,18 @@
 
 namespace turbohikerSFML {
 
-    class LeaderBoard {
+    class LeaderBoard : public turbohiker::LeaderBoard {
+    public:
+        LeaderBoard() = default;
 
-        void display(sf::RenderWindow& window);
+        void init(std::shared_ptr<sf::RenderWindow> &window, const sf::Font &userFont);
+        void display(std::string &playerName);
+    private:
+        sf::RectangleShape lbShape;
+        std::shared_ptr<sf::RenderWindow> _window;
+        sf::Text title;
+        sf::Text scores;
+        sf::Text personalBest;
     };
 
 }

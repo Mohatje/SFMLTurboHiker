@@ -2,6 +2,7 @@
 #include "Observer.h"
 #include <iostream>
 #include <ostream>
+#include <fstream>
 #include <map>
 #include <memory>
 
@@ -18,7 +19,11 @@ namespace turbohiker {
 
         const std::map<std::string, std::shared_ptr<Observer>> &getScoreObserverMap() const;
 
-        int getScore(std::string name) const;
+        int getScore(std::string &name) const;
+
+        void saveHighScore(std::string& playerName) const;
+
+        int getHighScore(const std::string& playerName) const;
 
     private:
         std::map<std::string, std::shared_ptr<Observer>> scoreObserverMap;

@@ -7,7 +7,6 @@
 #include "Transformation.h"
 #include "../Logic/ScoreObserver.h"
 #include <chrono>
-#include <fstream>
 
 namespace turbohikerSFML {
     Game::Game() : Game("./Config/config.ini") {}
@@ -28,6 +27,10 @@ namespace turbohikerSFML {
         bool vsync = config["Window"]["VSync"].as_bool_or_default(false);
         bool fullscreen = config["Window"]["Fullscreen"].as_bool_or_default(false);
 
+        std::string fontPath = config["Settings"]["FontPath"].as_string_or_die();
+        if ( !gameFont.loadFromFile(fontPath) )
+            std::cerr << "Could not load font " + fontPath + " . Please check the configuration file" << std::endl;
+
 
 
         if (fullscreen) {
@@ -39,8 +42,9 @@ namespace turbohikerSFML {
                           sf::Style::Close | sf::Style::Titlebar);
 
         }
-
         window->setVerticalSyncEnabled(vsync);
+
+        leaderBoard.init(window, gameFont);
 
         this->init();
     }
@@ -48,9 +52,7 @@ namespace turbohikerSFML {
     void Game::init() {
 
         playerName = config["Settings"]["PlayerName"].as_string_or_default("Player");
-        std::string fontPath = config["Settings"]["FontPath"].as_string_or_die();
-        if ( !gameFont.loadFromFile(fontPath) )
-            std::cerr << "Could not load font " + fontPath + " . Please check the configuration file" << std::endl;
+
 
         playerScore.setFont(gameFont);
         playerScore.setCharacterSize(45);
@@ -293,15 +295,12 @@ namespace turbohikerSFML {
             while (window->pollEvent(ev)) {
                 if (ev.type == sf::Event::Closed) {
                     window->close();
-                } else if (ev.type == sf::Event::KeyReleased && ev.key.code == sf::Keyboard::G) {
-                    spawn = !spawn;
                 }
+                if (gameFinished) continue;
                 world->handleGameEvent(ev);
             }
+            if (gameFinished) continue;
 
-            if (gameFinished) {
-                continue;
-            }
 
             auto now = clock::now();
             dTime = std::chrono::duration_cast<std::chrono::duration<float>>(now - last).count();
@@ -328,7 +327,8 @@ namespace turbohikerSFML {
                 world->doTypeSpecificAction();
                 if (!finishDrawn)
                     tryToDraw();
-                else {
+
+                if (finishDrawn && !gameFinished){
                     gameFinished = world->checkForFinish(finishLine);
                 }
                 correctOutOfBounds();
@@ -340,8 +340,14 @@ namespace turbohikerSFML {
 
             window->clear(sf::Color::Magenta);
             window->setView(gameView);
-            world->display();
-            displayScore();
+            if (gameFinished) {
+                world->display();
+                leaderBoard.display(playerName);
+            }
+            else {
+                world->display();
+                displayScore();
+            }
             window->display();
         }
     }

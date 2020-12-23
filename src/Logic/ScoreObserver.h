@@ -8,7 +8,7 @@ namespace turbohiker {
     public:
 
         void onNotify(ObservableEvent event) override;
-        std::ostream &operator<<(std::ostream& out) const override;
+        friend std::ostream &operator<<(std::ostream& out, const ScoreObserver& so);
 
 
     private:

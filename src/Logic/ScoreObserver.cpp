@@ -35,8 +35,10 @@ namespace turbohiker {
 
     }
 
-    std::ostream &ScoreObserver::operator<<(std::ostream &out) const {
-        out << score;
+
+
+    std::ostream &operator<<(std::ostream &out, const ScoreObserver& so) {
+        out << so.score;
         return out;
     }
 

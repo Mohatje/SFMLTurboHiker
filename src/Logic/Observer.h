@@ -26,9 +26,6 @@ namespace turbohiker {
 
         virtual void onNotify(ObservableEvent event) = 0;
 
-        virtual std::ostream &operator<<(std::ostream &os) const = 0;
-
-
     };
 
 }
