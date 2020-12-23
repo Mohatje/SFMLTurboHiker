@@ -23,12 +23,13 @@ namespace turbohikerSFML {
         if (event.type == sf::Event::KeyReleased) {
             if (event.key.code == speedToggle) {
                 setSpeed(getSpeed() + 300.0f);
-//                if (getSpeed() >= 650.0f) setSpeed(300.0f);
-                if (getSpeed() >= 450.0f) setSpeed(0.0f);
+                if (getSpeed() >= 650.0f) setSpeed(300.0f);
+//                if (getSpeed() >= 450.0f) setSpeed(0.0f);
             }
             else if (event.key.code == yellKey) {
                 float rnd = turbohiker::Random::randFloat(0.f, 1.f);
                 setYelled( rnd < 0.5f);
+                getPlayerPtr()->notifyObservers(turbohiker::ObservableEvent::Yelled);
             }
         }
     }

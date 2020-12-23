@@ -94,11 +94,6 @@ namespace turbohikerSFML {
         float animModifier = std::abs(curVelocity.second) > 1.f ? std::abs(curVelocity.second) : 1.f;
         animModifier = animModifier > std::abs(curVelocity.first) ? animModifier : std::abs(curVelocity.first);
 
-//        if ((std::abs(curVelocity.first) > 1.0f) || (std::abs(curVelocity.second) > 1.0f) )
-//            anim->update(, dTime * animModifier, textureFlipped);
-//        else
-//            anim->update(idleAnimation, dTime * animModifier, textureFlipped);
-
         anim->update(runAnimation, dTime * animModifier, textureFlipped);
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );

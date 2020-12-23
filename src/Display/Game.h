@@ -3,6 +3,7 @@
 #include "../Parser/ini_configuration.h"
 #include "World.h"
 #include "../Logic/GameAI.h"
+#include "../Logic/LeaderBoard.h"
 
 
 namespace turbohikerSFML {
@@ -14,7 +15,6 @@ namespace turbohikerSFML {
         ~Game() = default;
 
     public:
-
         void run();
         void init();
         void cleanup();
@@ -33,10 +33,17 @@ namespace turbohikerSFML {
         std::shared_ptr<World> world;
         std::shared_ptr<sf::Texture> tileSet;
         sf::View gameView;
+        sf::Font gameFont;
+        turbohiker::LeaderBoard leaderBoard;
+
+        std::string playerName;
+        sf::Text playerScore;
 
         bool finishDrawn = false;
+        bool gameFinished = false;
         double lastDrawnY = 3.0;
         double finishLine = 0.0;
+        double timeToFinish = 10.0;
 
     private:
         void generateMap();
@@ -50,6 +57,7 @@ namespace turbohikerSFML {
         void spawnFinishLine();
 
         void calculateView(float dTime);
+        void displayScore();
     };
 
 }

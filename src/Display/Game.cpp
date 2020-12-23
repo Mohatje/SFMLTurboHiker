@@ -5,6 +5,7 @@
 #include "../Logic/Random.h"
 #include "TileEntity.h"
 #include "Transformation.h"
+#include "../Logic/ScoreObserver.h"
 #include <chrono>
 #include <fstream>
 
@@ -46,8 +47,19 @@ namespace turbohikerSFML {
 
     void Game::init() {
 
-        entFactory = FactoryCreator::getFactory("entity", window, config);
+        playerName = config["Settings"]["PlayerName"].as_string_or_default("Player");
+        std::string fontPath = config["Settings"]["FontPath"].as_string_or_die();
+        if ( !gameFont.loadFromFile(fontPath) )
+            std::cerr << "Could not load font " + fontPath + " . Please check the configuration file" << std::endl;
 
+        playerScore.setFont(gameFont);
+        playerScore.setCharacterSize(45);
+        playerScore.setFillColor(sf::Color::White);
+        playerScore.setOutlineColor(sf::Color::Black);
+        playerScore.setOutlineThickness(2.5f);
+
+
+        entFactory = FactoryCreator::getFactory("entity", window, config);
         EntityRef worldEnt = entFactory->createEntity(turbohiker::EntityType::World);
         if (worldEnt->getType() != turbohiker::EntityType::World)
             std::cerr << "Factory did not return a World entity." << std::endl;
@@ -57,6 +69,9 @@ namespace turbohikerSFML {
         world.reset(temp);
 
         world->addEntity(entFactory->createEntity(turbohiker::EntityType::Player));
+        std::shared_ptr<turbohiker::Observer> playerObserver = std::make_shared<turbohiker::ScoreObserver> ( );
+        leaderBoard.addObserver(playerName, playerObserver);
+        world->getPlayerPtr()->addObserver(std::move(playerObserver));
 
         gameView.setSize(static_cast<sf::Vector2f> (window->getSize()));
         gameView.setCenter(static_cast<sf::Vector2f> (window->getSize()) / 2.0f);
@@ -82,6 +97,26 @@ namespace turbohikerSFML {
         forthRacer->setPosition( {0.5, -2.0} );
         auto fifthRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
         fifthRacer->setPosition( {1.5, -2.0} );
+
+        std::shared_ptr<turbohiker::Observer> firstObserver = std::make_shared<turbohiker::ScoreObserver> ( );
+        leaderBoard.addObserver("CPU0", firstObserver);
+        firstRacer->addObserver(firstObserver);
+
+        std::shared_ptr<turbohiker::Observer> secondObserver = std::make_shared<turbohiker::ScoreObserver> ( );
+        leaderBoard.addObserver("CPU1", secondObserver);
+        secondRacer->addObserver(secondObserver);
+
+        std::shared_ptr<turbohiker::Observer> thirdObserver = std::make_shared<turbohiker::ScoreObserver> ( );
+        leaderBoard.addObserver("CPU2", thirdObserver);
+        thirdRacer->addObserver(thirdObserver);
+
+        std::shared_ptr<turbohiker::Observer> forthObserver = std::make_shared<turbohiker::ScoreObserver> ( );
+        leaderBoard.addObserver("CPU3", forthObserver);
+        forthRacer->addObserver(forthObserver);
+
+        std::shared_ptr<turbohiker::Observer> fifthObserver = std::make_shared<turbohiker::ScoreObserver> ( );
+        leaderBoard.addObserver("CPU4", fifthObserver);
+        fifthRacer->addObserver(fifthObserver);
 
         world->addEntity(std::move(firstRacer));
         world->addEntity(std::move(secondRacer));
@@ -158,10 +193,6 @@ namespace turbohikerSFML {
         }
     }
 
-    void Game::spawnFinishLine() {
-        std::cerr << "Spawned finish line " << std::endl;
-    }
-
     void Game::spawnObstacle() {
         auto playerY = world->getPlayerPosition().second;
 
@@ -182,14 +213,8 @@ namespace turbohikerSFML {
         }
     }
 
-    void Game::tryToDraw() {
-        float topPixelY = gameView.getCenter().y - (gameView.getSize().y / 2);
-        auto worldPos = Transformation::convertPosFromPixels(*window, {0, topPixelY});
-
-        if (lastDrawnY < worldPos.second) {
-            lastDrawnY += 0.5;
-            generateStrip({2, 4}, {11, 4}, {0, 4}, lastDrawnY);
-        }
+    void Game::spawnFinishLine() {
+        std::cerr << "Spawned finish line " << std::endl;
 
         if (finishDrawn) {
             for (uint8_t i = 0; i < 11; i++) {
@@ -209,10 +234,10 @@ namespace turbohikerSFML {
 
                 // Finish collider
                 auto finishCollider = EntityRef ( new TileEntity (window, { 0.0, lastDrawnY + 5.5}, {8.0, 10.0},
-                                                              nullptr, {0, 0}, true) );
+                                                                  nullptr, {0, 0}, true) );
 
                 world->addEntity(std::move(finishCollider));
-                finishLine = lastDrawnY + 0.5;
+                finishLine = lastDrawnY;
 
                 std::cout << "PlayerY " << world->getPlayerPosition().second << "\t lastDrawnY " << lastDrawnY << std::endl;
 
@@ -226,8 +251,26 @@ namespace turbohikerSFML {
             }
 
             lastDrawnY += 25;
-            finishDrawn = false;
         }
+    }
+
+    void Game::tryToDraw() {
+        float topPixelY = gameView.getCenter().y - (gameView.getSize().y / 2);
+        auto worldPos = Transformation::convertPosFromPixels(*window, {0, topPixelY});
+
+        if (lastDrawnY < worldPos.second) {
+            lastDrawnY += 0.5;
+            generateStrip({2, 4}, {11, 4}, {0, 4}, lastDrawnY);
+        }
+
+    }
+
+    void Game::displayScore() {
+        sf::Vector2f viewCenter = gameView.getCenter();
+        sf::Vector2f viewSize = gameView.getSize();
+        playerScore.setPosition(viewCenter - (viewSize / 2.0f) + sf::Vector2f(10, 10) );
+        playerScore.setString("Score: " + std::to_string(leaderBoard.getScore(playerName)) );
+        window->draw(playerScore);
     }
 
     void Game::run() {
@@ -245,7 +288,7 @@ namespace turbohikerSFML {
         sf::Event ev{};
         bool spawn = true;
 
-        double timeToFinish = 10.0 + turbohiker::Random::randFloat(-5.f, 10.f);
+        timeToFinish += turbohiker::Random::randFloat(-5.f, 10.f);
         while (window->isOpen()) {
             while (window->pollEvent(ev)) {
                 if (ev.type == sf::Event::Closed) {
@@ -254,6 +297,10 @@ namespace turbohikerSFML {
                     spawn = !spawn;
                 }
                 world->handleGameEvent(ev);
+            }
+
+            if (gameFinished) {
+                continue;
             }
 
             auto now = clock::now();
@@ -279,10 +326,13 @@ namespace turbohikerSFML {
             while (updateTimer >= fixedDelta) {
                 world->update(float(fixedDelta));
                 world->doTypeSpecificAction();
-                tryToDraw();
+                if (!finishDrawn)
+                    tryToDraw();
+                else {
+                    gameFinished = world->checkForFinish(finishLine);
+                }
                 correctOutOfBounds();
                 calculateView(float(fixedDelta));
-
 
                 updateTimer -= fixedDelta;
 
@@ -291,12 +341,13 @@ namespace turbohikerSFML {
             window->clear(sf::Color::Magenta);
             window->setView(gameView);
             world->display();
+            displayScore();
             window->display();
         }
     }
 
     void Game::calculateView(float dTime) {
-        float convertedFinish = Transformation::convertPosToPixels( *window, {0.0, finishLine + 2} ).y;
+        float convertedFinish = Transformation::convertPosToPixels( *window, {0.0, finishLine + 2.5} ).y;
         if (finishLine <= 0.0 || gameView.getCenter().y > convertedFinish) {
             gameView.move(0, -world->getSpeed() * dTime);
         } else {

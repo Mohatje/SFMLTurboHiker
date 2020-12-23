@@ -43,16 +43,20 @@ namespace turbohiker {
         this->curState = _curState;
     }
 
-    void Entity::addState(EntityAIState _curState) {
-        stateStack.push(_curState);
+    bool Entity::isCurrentlyColliding() const {
+        return currentlyColliding;
     }
 
-    std::stack<EntityAIState>& Entity::getStates() {
-        return stateStack;
+    void Entity::setIsCurrentlyColliding(bool _currentlyColliding) {
+        this->currentlyColliding = _currentlyColliding;
     }
 
-    Entity::Entity() {
-        stateStack.push(EntityAIState::Idle);
-    }
+//    int Entity::getScore() const {
+//        return this->score;
+//    }
+//
+//    void Entity::setScore(int score) {
+//        this->score = score;
+//    }
 
 }

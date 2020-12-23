@@ -1,6 +1,9 @@
 #pragma once
 #include <utility>
-#include <stack>
+#include <vector>
+#include <memory>
+#include "Observable.h"
+
 
 namespace turbohiker {
 
@@ -29,9 +32,9 @@ namespace turbohiker {
         Tile = 8
     };
 
-    class Entity {
+    class Entity : public Observable {
     public:
-        Entity();
+        Entity() = default;
         Entity(const Entity &cpy) = default;
         virtual ~Entity() = default;
 
@@ -55,8 +58,13 @@ namespace turbohiker {
 
         virtual void setCurState(EntityAIState curState);
 
-        void addState(EntityAIState _curState);
-        std::stack<EntityAIState> &getStates();
+        bool isCurrentlyColliding() const;
+
+        void setIsCurrentlyColliding(bool _isCurrentlyColliding);
+
+//        int getScore() const;
+//
+//        void setScore(int score);
 
     private:
         std::pair<double, double> position {0.0, 0.0}; // x, y position (should be the middle of the entity by default)
@@ -65,6 +73,8 @@ namespace turbohiker {
         std::pair<double, double> origin {0.0, 0.0}; // x = width, y = height
 
         EntityAIState curState = EntityAIState::Idle;
-        std::stack<EntityAIState> stateStack;
+
+        bool currentlyColliding = false;
+//        int score = 0;
     };
 }

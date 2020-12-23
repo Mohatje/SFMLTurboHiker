@@ -1,6 +1,6 @@
 #include "World.h"
 #include <iostream>
-#include <cmath>
+#include <algorithm>
 
 
 namespace turbohiker {
@@ -10,9 +10,16 @@ namespace turbohiker {
     // Will be using this function for collision control
     bool World::doTypeSpecificAction() {
         for (uint32_t i = 0; i < worldEntities.size() - 1; i++) {
+            bool hasCollided = false;
             for (uint32_t j = i + 1; j < worldEntities.size(); j++) {
-                checkCollision(worldEntities[i], worldEntities[j]);
+                bool collided = checkCollision(worldEntities[i], worldEntities[j]);
+                if (collided && worldEntities[j]->getType() != EntityType::Tile) hasCollided = true;
             }
+            if ( hasCollided && !worldEntities[i]->isCurrentlyColliding()) {
+                worldEntities[i]->notifyObservers(ObservableEvent::Collision);
+            }
+            worldEntities[i]->setIsCurrentlyColliding(hasCollided);
+
         }
 
         for (auto& ent : worldEntities) {
@@ -230,6 +237,38 @@ namespace turbohiker {
                 i++;
             }
         }
+    }
+
+    bool World::checkForFinish(double finishLine) {
+        bool finished = false;
+        for (auto& ent : worldEntities) {
+            if ( !(ent->getType() == EntityType::RacingHiker || ent->getType() == EntityType::Player) ) continue;
+            auto entPos = ent->getPosition();
+
+            if (entPos.second >= finishLine) {
+                ent->notifyObservers(ObservableEvent::FinishedFirst);
+                finished = true;
+            }
+        }
+
+        if (finished) {
+            std::vector<SharedEntityRef> tmp;
+            for (const auto& ent : worldEntities) {
+                if (ent->getType() == EntityType::RacingHiker || ent->getType() == EntityType::Player) {
+                    tmp.push_back(ent);
+                }
+            }
+            std::sort(tmp.begin(), tmp.end(), [] (SharedEntityRef first, SharedEntityRef second) {
+               return  first->getPosition().second > second->getPosition().second;
+            });
+
+            tmp[1]->notifyObservers(ObservableEvent::FinishedSecond);
+            tmp[2]->notifyObservers(ObservableEvent::FinishedThird);
+            tmp[3]->notifyObservers(ObservableEvent::FinishedForth);
+            tmp[4]->notifyObservers(ObservableEvent::FinishedFifth);
+            tmp[5]->notifyObservers(ObservableEvent::FinishedSixth);
+        }
+        return finished;
     }
 
 

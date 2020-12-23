@@ -103,6 +103,7 @@ namespace turbohiker {
                 if (ent->getType() == EntityType::MovingHikerActive || ent->getType() == EntityType::RacingHiker) return;
                 auto rnd = Random::randFloat(0.f, 1.f);
                 if (rnd < 0.01f) {
+                    hiker->notifyObservers(ObservableEvent::Yelled);
                     _world.lock()->setYelled(true);
                     hiker->setCurState(EntityAIState::Yell);
                 }

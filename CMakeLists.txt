@@ -29,7 +29,11 @@ ADD_LIBRARY(TurboHikerLogic STATIC
             src/Logic/World.cpp
             src/Logic/PassingHiker1.cpp
             src/Logic/PassingHiker2.cpp
-            src/Logic/GameAI.cpp src/Logic/RacingHiker.cpp)
+            src/Logic/GameAI.cpp
+            src/Logic/RacingHiker.cpp
+            src/Logic/ScoreObserver.cpp
+            src/Logic/Observable.cpp
+            src/Logic/LeaderBoard.cpp)
 
 ADD_LIBRARY(INIConfiguration STATIC
             src/Parser/ini_configuration.cc src/assertion.h)
@@ -53,7 +57,8 @@ add_executable(SFMLTurboHiker
                 src/Display/TileEntity.cpp
                 src/Display/PassingHiker1.cpp
                 src/Display/PassingHiker2.cpp
-                src/Display/RacingHiker.cpp)
+                src/Display/RacingHiker.cpp
+                src/Display/LeaderBoard.cpp)
 
 
 find_package(SFML 2 COMPONENTS audio graphics window system REQUIRED)

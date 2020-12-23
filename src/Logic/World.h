@@ -62,10 +62,12 @@ namespace turbohiker {
 
         void clearEntitiesAbove(double yConstraint);
 
-    private:
+        bool checkForFinish(double finishLine);
 
+    private:
         std::vector<SharedEntityRef> worldEntities;
         std::deque<SharedEntityRef> worldEntityDeque;
+
         std::vector<SharedEntityRef> worldTiles;
 
         SharedEntityRef player;
