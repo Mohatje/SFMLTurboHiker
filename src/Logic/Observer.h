@@ -9,13 +9,13 @@ namespace turbohiker {
 
     enum class ObservableEvent {
         None = 0,
-        Collision = 1,
-        FinishedFirst = 2,
-        FinishedSecond = 3,
-        FinishedThird = 4,
-        FinishedForth = 5,
-        FinishedFifth = 6,
-        FinishedSixth = 7,
+        FinishedFirst = 1,
+        FinishedSecond = 2,
+        FinishedThird = 3,
+        FinishedForth = 4,
+        FinishedFifth = 5,
+        FinishedSixth = 6,
+        Collision = 7,
         Yelled = 8
     };
 

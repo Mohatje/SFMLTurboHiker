@@ -13,6 +13,7 @@ namespace turbohiker {
 
     private:
         int score = 0;
+        bool finished = false;
     };
 
 }

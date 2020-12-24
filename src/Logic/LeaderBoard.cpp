@@ -41,7 +41,6 @@ namespace turbohiker {
             highScoreFile << curScore;
         }
         highScoreFile.close();
-        std::cout << highScore << "\t" << curScore << std::endl;
     }
 
     int LeaderBoard::getHighScore(const std::string& playerName) const {

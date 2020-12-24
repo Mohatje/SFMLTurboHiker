@@ -11,10 +11,17 @@ namespace turbohiker {
     bool World::doTypeSpecificAction() {
         for (uint32_t i = 0; i < worldEntities.size() - 1; i++) {
             bool hasCollided = false;
-            for (uint32_t j = i + 1; j < worldEntities.size(); j++) {
+            if ( !(worldEntities[i]->getType() == EntityType::Player || worldEntities[i]->getType() == EntityType::RacingHiker) ) continue;
+            for (uint32_t j = 0; j < worldEntities.size(); j++) {
+                if (i == j) continue;
+
                 bool collided = checkCollision(worldEntities[i], worldEntities[j]);
-                if (collided && worldEntities[j]->getType() != EntityType::Tile) hasCollided = true;
+
+                if (collided && worldEntities[j]->getType() != EntityType::Tile) {
+                    hasCollided = true;
+                }
             }
+
             if ( hasCollided && !worldEntities[i]->isCurrentlyColliding()) {
                 worldEntities[i]->notifyObservers(ObservableEvent::Collision);
             }
@@ -240,36 +247,27 @@ namespace turbohiker {
     }
 
     bool World::checkForFinish(double finishLine) {
-        bool finished = false;
-        for (auto& ent : worldEntities) {
-            if ( !(ent->getType() == EntityType::RacingHiker || ent->getType() == EntityType::Player) ) continue;
+        static int playersFinished = 0;
+        static auto vec = worldEntities;
+
+        for (auto it = vec.begin(); it != vec.end();) {
+            auto ent = *it;
+            if ( !(ent->getType() == EntityType::RacingHiker || ent->getType() == EntityType::Player) ) {
+                ++it;
+                continue;
+            }
             auto entPos = ent->getPosition();
 
             if (entPos.second >= finishLine) {
-                ent->notifyObservers(ObservableEvent::FinishedFirst);
-                finished = true;
+                playersFinished++;
+                std::cout << playersFinished << std::endl;
+                ent->notifyObservers(static_cast<ObservableEvent> (playersFinished));
+                ent->setCurState(EntityAIState::Default);
+                vec.erase(it);
+            } else {
+                ++it;
             }
         }
-
-        if (finished) {
-            std::vector<SharedEntityRef> tmp;
-            for (const auto& ent : worldEntities) {
-                if (ent->getType() == EntityType::RacingHiker || ent->getType() == EntityType::Player) {
-                    tmp.push_back(ent);
-                }
-            }
-            std::sort(tmp.begin(), tmp.end(), [] (SharedEntityRef first, SharedEntityRef second) {
-               return  first->getPosition().second > second->getPosition().second;
-            });
-
-            tmp[1]->notifyObservers(ObservableEvent::FinishedSecond);
-            tmp[2]->notifyObservers(ObservableEvent::FinishedThird);
-            tmp[3]->notifyObservers(ObservableEvent::FinishedForth);
-            tmp[4]->notifyObservers(ObservableEvent::FinishedFifth);
-            tmp[5]->notifyObservers(ObservableEvent::FinishedSixth);
-        }
-        return finished;
+        return playersFinished == 6;
     }
-
-
 }

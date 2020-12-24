@@ -109,14 +109,13 @@ namespace turbohiker {
                 }
                 return;
             }
-
         }
 
         float chanceSpeedup;
         float distanceToPlayer = playerPos.second - hiker->getPosition().second;
         float chance = std::min( ((30.f / 4.f) * std::abs(distanceToPlayer)) + 0.3f, 1.f);
         chanceSpeedup = distanceToPlayer < 0.f ? 1.0f - chance : chance;
-        if (std::abs(distanceToPlayer) < 2.0) chanceSpeedup = 0.5;
+        if (std::abs(distanceToPlayer) < 1.5) chanceSpeedup = 0.5;
 
         auto rnd = Random::randFloat(0.f, 1.f);
         if (rnd < chanceSpeedup) {

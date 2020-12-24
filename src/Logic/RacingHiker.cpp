@@ -14,29 +14,30 @@ namespace turbohiker {
         curVelocity.first -= ( curVelocity.first * 8.0 * dTime );
         curVelocity.second -= ( curVelocity.second * 8.0 * dTime );
 
-        if (getCurState() == EntityAIState::SpeedUp) {
-            curVelocity.second += 40.0 * dTime;
+        switch (getCurState()) {
+
+            case EntityAIState::Default:
+                return;
+            case EntityAIState::SpeedUp:
+                curVelocity.second += 40.0 * dTime;
+                break;
+            case EntityAIState::SlowDown:
+                curVelocity.second -= 30.0 * dTime;
+                break;
+            case EntityAIState::RunR:
+                curVelocity.first += 20.0 * dTime;
+                break;
+            case EntityAIState::RunL:
+                curVelocity.first -= 20.0 * dTime;
+                break;
+            case EntityAIState::Yell:
+                action = true;
+                break;
+            case EntityAIState::UnYell:
+                action = false;
+                break;
         }
 
-        if (getCurState() == EntityAIState::SlowDown) {
-            curVelocity.second -= 30.0 * dTime;
-        }
-
-        if (getCurState() == EntityAIState::RunL || isMovingL) {
-            curVelocity.first -= 20.0 * dTime;
-        }
-
-        if (getCurState() == EntityAIState::RunR || isMovingR) {
-            curVelocity.first += 20.0 * dTime;
-        }
-
-        if (getCurState() == EntityAIState::Yell) {
-            action = true;
-        }
-
-        if (getCurState() == EntityAIState::UnYell) {
-            action = false;
-        }
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
 

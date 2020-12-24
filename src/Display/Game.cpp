@@ -92,13 +92,13 @@ namespace turbohikerSFML {
         auto firstRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
         firstRacer->setPosition( {-2.5, -2.0} );
         auto secondRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
-        secondRacer->setPosition( {-1.5, -2.0} );
+        secondRacer->setPosition( {-1.0, -2.0} );
         auto thirdRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
-        thirdRacer->setPosition( {-0.5, -2.0} );
+        thirdRacer->setPosition( {0.5, -2.0} );
         auto forthRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
-        forthRacer->setPosition( {0.5, -2.0} );
+        forthRacer->setPosition( {2.0, -2.0} );
         auto fifthRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
-        fifthRacer->setPosition( {1.5, -2.0} );
+        fifthRacer->setPosition( {3.5, -2.0} );
 
         std::shared_ptr<turbohiker::Observer> firstObserver = std::make_shared<turbohiker::ScoreObserver> ( );
         leaderBoard.addObserver("CPU0", firstObserver);
@@ -335,7 +335,6 @@ namespace turbohikerSFML {
                 calculateView(float(fixedDelta));
 
                 updateTimer -= fixedDelta;
-
             }
 
             window->clear(sf::Color::Magenta);

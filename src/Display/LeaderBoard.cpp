@@ -72,10 +72,6 @@ namespace turbohikerSFML {
         personalBest.setPosition({lbPosition.x, lbPosition.y + (lbShape.getSize().y * 0.35f)});
         _window->draw(personalBest);
 
-
-
-
-
     }
 
 }
