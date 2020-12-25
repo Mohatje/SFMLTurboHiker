@@ -56,6 +56,9 @@ namespace turbohikerSFML {
     }
 
     void Player::update(float dTime) {
+        if (getCurState() == turbohiker::EntityAIState::Finished)
+            return;
+
         auto curVelocity = getVelocity();
 
         // Velocity decay

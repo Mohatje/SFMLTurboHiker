@@ -162,6 +162,24 @@ namespace turbohiker {
         }
     }
 
+    void World::displayTiles() {
+        for (auto& tile : worldTiles)
+            tile->display();
+    }
+
+    void World::displayEntities() {
+        for (auto& entity : worldEntities) {
+            if (entity->getType() == EntityType::StaticHikerInactive) {
+                entity->display();
+            }
+        }
+        for (auto& entity : worldEntities) {
+            if (entity->getType() != EntityType::StaticHikerInactive) {
+                entity->display();
+            }
+        }
+    }
+
     void World::addEntity(EntityRef ent) {
         if (ent->getType() == EntityType::Player) {
             player = std::move(ent);
@@ -260,14 +278,37 @@ namespace turbohiker {
 
             if (entPos.second >= finishLine) {
                 playersFinished++;
-                std::cout << playersFinished << std::endl;
                 ent->notifyObservers(static_cast<ObservableEvent> (playersFinished));
-                ent->setCurState(EntityAIState::Default);
+                ent->setCurState(EntityAIState::Finished);
+                ent->move( {0, 1.5} );
+                worldEntities.erase(std::find(worldEntities.begin(), worldEntities.end(), ent));
                 vec.erase(it);
             } else {
                 ++it;
             }
         }
         return playersFinished == 6;
+    }
+
+    void World::observeOrder() {
+        if (speed >= 500.f && player->getCurState() != EntityAIState::Finished) {
+            player->notifyObservers(ObservableEvent::WorldSpeed);
+        }
+
+        std::vector<SharedEntityRef> vec;
+        for (auto& ent : worldEntities) {
+            if (ent->getType() == EntityType::Player || ent->getType() == EntityType::RacingHiker)
+                vec.push_back(ent);
+        }
+        std::sort(vec.begin(), vec.end(), [] (SharedEntityRef st, SharedEntityRef nd) {
+            return st->getPosition().second > nd->getPosition().second;
+        });
+        int i = 10;
+        for (auto& ent : vec) {
+            if (ent->getCurState() != EntityAIState::Finished) {
+                ent->notifyObservers( static_cast<ObservableEvent> (i) );
+            }
+            i++;
+        }
     }
 }

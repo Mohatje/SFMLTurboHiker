@@ -28,6 +28,8 @@ namespace turbohiker {
         ~World() = default;
 
         void display() override;
+        virtual void displayTiles();
+        virtual void displayEntities();
         void update(float dt) override;
         bool doTypeSpecificAction() override;
 
@@ -63,6 +65,8 @@ namespace turbohiker {
         void clearEntitiesAbove(double yConstraint);
 
         bool checkForFinish(double finishLine);
+
+        virtual void observeOrder();
 
     private:
         std::vector<SharedEntityRef> worldEntities;

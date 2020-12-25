@@ -19,7 +19,6 @@ namespace turbohikerSFML {
     private:
         sf::Keyboard::Key speedToggle;
         sf::Keyboard::Key yellKey;
-
         std::weak_ptr<sf::RenderWindow> _window;
 
         sf::Event worldEvent {};

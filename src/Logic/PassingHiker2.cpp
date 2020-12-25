@@ -18,6 +18,10 @@ namespace turbohiker {
             curVelocity.first += 20.0 * dTime;
         }
 
+        if (getCurState() == turbohiker::EntityAIState::SlowDown) {
+            curVelocity.second /= 2.0;
+        }
+
         setVelocity(curVelocity);
         move( {curVelocity.first * dTime, curVelocity.second * dTime} );
         setCurState(EntityAIState::Idle);

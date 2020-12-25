@@ -17,7 +17,8 @@ namespace turbohiker {
         Yell = 6,
         UnYell = 7,
         Stuck = 8,
-        Idle = 9
+        Finished = 9,
+        Idle = 10
     };
 
     enum class EntityType {

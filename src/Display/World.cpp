@@ -23,8 +23,8 @@ namespace turbohikerSFML {
         if (event.type == sf::Event::KeyReleased) {
             if (event.key.code == speedToggle) {
                 setSpeed(getSpeed() + 300.0f);
-//                if (getSpeed() >= 650.0f) setSpeed(300.0f);
-                if (getSpeed() >= 450.0f) setSpeed(0.0f);
+                if (getSpeed() >= 650.0f) setSpeed(300.0f);
+//                if (getSpeed() >= 450.0f) setSpeed(0.0f);
             }
             else if (event.key.code == yellKey) {
                 float rnd = turbohiker::Random::randFloat(0.f, 1.f);
@@ -57,7 +57,8 @@ namespace turbohikerSFML {
     bool World::removeNearestObstacle(const std::pair<double, double> &distPos) {
         double distance = 1000.0;
         for (auto& ent : getEntities()) {
-            if (ent->getType() == turbohiker::EntityType::StaticHikerActive) {
+            auto entType = ent->getType();
+            if (entType == turbohiker::EntityType::StaticHikerActive || entType == turbohiker::EntityType::MovingHikerActive) {
                 auto entPos = ent->getPosition();
                 if (entPos.second < distPos.second) {
                     continue;
@@ -71,15 +72,20 @@ namespace turbohikerSFML {
         if (distance > 15) return false;
 
         for (auto& ent : getEntities()) {
-            if (ent->getType() == turbohiker::EntityType::StaticHikerActive) {
+            auto entType = ent->getType();
+            if (entType == turbohiker::EntityType::StaticHikerActive || entType == turbohiker::EntityType::MovingHikerActive) {
                 auto entPos = ent->getPosition();
                 if (entPos.second < distPos.second ) continue;
 
                 double tmpDistance = sqrt( pow((distPos.first - entPos.first), 2) + pow((distPos.second - entPos.second), 2) );
                 if (tmpDistance == distance) {
-                    // Using raw pointer here for a bit, shouldn't pose any memory problem though
-                    // Since the raw pointer is single use only thing anyways. The deletion will still happen as per unique ptr instruction
-                    dynamic_cast<PassingHiker1*> (ent.get())->setActive(false);
+                    if (entType == turbohiker::EntityType::StaticHikerActive) {
+                        // Using raw pointer here for a bit, shouldn't pose any memory problem though
+                        // Since the raw pointer is single use only thing anyways. The deletion will still happen as per unique ptr instruction
+                        dynamic_cast<PassingHiker1*> (ent.get())->setActive(false);
+                    } else {
+                        ent->setCurState(turbohiker::EntityAIState::SlowDown);
+                    }
                     return true;
                 }
             }

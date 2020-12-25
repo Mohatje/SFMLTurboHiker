@@ -27,7 +27,6 @@ namespace turbohikerSFML {
         setPosition( {0, 0} );
         setOrigin( {getSize().first / 2.0, getSize().second / 2.0 } );
         racerRect->setTexture(racerTexture.get());
-//        racerRect->setFillColor(sf::Color::Cyan);
     }
 
     void RacingHiker::display() {
@@ -35,6 +34,9 @@ namespace turbohikerSFML {
     }
 
     void RacingHiker::update(float dTime) {
+        if (getCurState() == turbohiker::EntityAIState::Finished)
+            return;
+
         turbohiker::RacingHiker::update(dTime);
         auto curVelocity = getVelocity();
         textureFlipped = curVelocity.first < 0.0;

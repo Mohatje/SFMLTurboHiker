@@ -39,6 +39,27 @@ namespace turbohiker {
             case ObservableEvent::Yelled:
                 score -= 5;
                 break;
+            case ObservableEvent::WorldSpeed:
+                score += 5;
+                break;
+            case ObservableEvent::CurrentlyFirst:
+                score += 15;
+                break;
+            case ObservableEvent::CurrentlySecond:
+                score += 10;
+                break;
+            case ObservableEvent::CurrentlyThird:
+                score += 5;
+                break;
+            case ObservableEvent::CurrentlyForth:
+                score += 2;
+                break;
+            case ObservableEvent::CurrentlyFifth:
+                score += 1;
+                break;
+            case ObservableEvent::CurrentlySixth:
+                score += 0;
+                break;
         }
 
     }

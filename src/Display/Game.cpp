@@ -40,11 +40,11 @@ namespace turbohikerSFML {
         else {
             window = std::make_shared<sf::RenderWindow> (sf::VideoMode(width, height), "TurboHiker",
                           sf::Style::Close | sf::Style::Titlebar);
-
         }
         window->setVerticalSyncEnabled(vsync);
 
-        leaderBoard.init(window, gameFont);
+        std::string lbTexPath = config["Settings"]["LeaderboardTexture"].as_string_or_die();
+        leaderBoard.init(window, gameFont, lbTexPath);
 
         this->init();
     }
@@ -55,10 +55,10 @@ namespace turbohikerSFML {
 
 
         playerScore.setFont(gameFont);
-        playerScore.setCharacterSize(45);
+        playerScore.setCharacterSize(static_cast<uint32_t> (window->getSize().x / 28.f));
         playerScore.setFillColor(sf::Color::White);
         playerScore.setOutlineColor(sf::Color::Black);
-        playerScore.setOutlineThickness(2.5f);
+        playerScore.setOutlineThickness(window->getSize().x / 512.f);
 
 
         entFactory = FactoryCreator::getFactory("entity", window, config);
@@ -85,6 +85,13 @@ namespace turbohikerSFML {
 
         auto& AI = turbohiker::GameAI::instantiateAI(thWorld);
         generateMap();
+
+        std::string finishPortal = config["World"]["FinishPortal"].as_string_or_die();
+        finishTexture = std::make_shared<sf::Texture> ( );
+        if ( !(finishTexture->loadFromFile(finishPortal)) )
+            std::cerr << "Finish portal texture could not be loaded. Check the configuration file." << std::endl;
+
+        finishAnimation = std::unique_ptr<Animation> (new Animation(finishTexture, {5, 1}, 0.20f));
 
     }
 
@@ -232,7 +239,9 @@ namespace turbohikerSFML {
 
                 lastDrawnY += 0.5;
                 generateStrip({6, 4}, {6, 4}, {6, 4}, lastDrawnY);
-                generateStrip({11, 0}, {11, 0}, {11, 0}, lastDrawnY);
+                generateFinishPortals(lastDrawnY);
+
+//                generateStrip({11, 0}, {11, 0}, {11, 0}, lastDrawnY);
 
                 // Finish collider
                 auto finishCollider = EntityRef ( new TileEntity (window, { 0.0, lastDrawnY + 5.5}, {8.0, 10.0},
@@ -299,7 +308,10 @@ namespace turbohikerSFML {
                 if (gameFinished) continue;
                 world->handleGameEvent(ev);
             }
-            if (gameFinished) continue;
+            if (gameFinished) {
+
+                continue;
+            }
 
 
             auto now = clock::now();
@@ -309,10 +321,14 @@ namespace turbohikerSFML {
             updateTimer += dTime;
             finishTimer += dTime;
 
-            if (timer >= 1.0) {
-                timer = 0;
+            while (timer >= 1.0) {
+                timer -= 1.0;
                 if (spawn)
                     spawnObstacle();
+
+                if (!gameFinished)
+                    world->observeOrder();
+
             }
 
             if (timeToFinish > -1.0 && finishTimer >= timeToFinish) {
@@ -339,14 +355,18 @@ namespace turbohikerSFML {
 
             window->clear(sf::Color::Magenta);
             window->setView(gameView);
-            if (gameFinished) {
-                world->display();
+            finishAnimation->update(0, float(fixedDelta));
+            world->displayTiles();
+            for (auto& rect : finishPortals) {
+                rect.setTextureRect(finishAnimation->textureRect);
+                window->draw(rect);
+            }
+            world->displayEntities();
+
+            if (gameFinished)
                 leaderBoard.display(playerName);
-            }
-            else {
-                world->display();
+            else
                 displayScore();
-            }
             window->display();
         }
     }
@@ -357,6 +377,18 @@ namespace turbohikerSFML {
             gameView.move(0, -world->getSpeed() * dTime);
         } else {
             world->setSpeed( 0.f );
+        }
+    }
+
+    void Game::generateFinishPortals(double _lastDrawnY) {
+        double x = -3.50;
+        for (int i = 0; i < 8; i++) {
+            sf::RectangleShape tmp(Transformation::convertSizeToPixels(*window, {1.0, 1.0}));
+            tmp.setOrigin(tmp.getSize() / 2.0f);
+            tmp.setPosition(Transformation::convertPosToPixels(*window, {x, _lastDrawnY + 0.25}));
+            tmp.setTexture(finishTexture.get());
+            finishPortals.emplace_back(tmp);
+            x += 1.0;
         }
     }
 }

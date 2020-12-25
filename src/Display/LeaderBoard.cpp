@@ -6,33 +6,41 @@
 namespace turbohikerSFML {
 
 
-    void LeaderBoard::init(std::shared_ptr<sf::RenderWindow> &window, const sf::Font &userFont) {
+    void LeaderBoard::init(std::shared_ptr<sf::RenderWindow> &window, const sf::Font &userFont, std::string texturePath) {
         _window = window;
-        lbShape.setFillColor(sf::Color(0, 0, 0, 150));
-        lbShape.setSize( Transformation::convertSizeToPixels( *_window, {2.5, 2.5}) );
+        if ( !lbTexture.loadFromFile(texturePath) ) {
+            std::cerr << "Could not load leaderboard texture " + texturePath + ". Please check the configuration file." << std::endl;
+            lbShape.setFillColor(sf::Color(0, 0, 0, 150));
+        } else {
+            lbShape.setTexture(&lbTexture);
+        }
+
+        lbShape.setSize( Transformation::convertSizeToPixels( *_window, {3.5, 3.25}) );
         lbShape.setOrigin(lbShape.getSize() / 2.0f);
 
         title.setFont(userFont);
-        title.setCharacterSize(50);
+        title.setCharacterSize(static_cast<uint32_t> (_window->getSize().x / 25.0f));
         title.setFillColor(sf::Color::White);
         title.setOutlineColor(sf::Color::Black);
-        title.setOutlineThickness(2.5f);
+        title.setOutlineThickness(_window->getSize().x / 512.0f);
         title.setString("-==Leaderboard==-");
         auto titleBounds = title.getGlobalBounds();
         title.setOrigin( titleBounds.left + titleBounds.width / 2.0f, titleBounds.top + titleBounds.height / 2.0f);
 
 
         scores.setFont(userFont);
-        scores.setCharacterSize(30);
+        scores.setCharacterSize(static_cast<uint32_t> (_window->getSize().x / 45.0f));
+//        scores.setCharacterSize(40);
         scores.setFillColor(sf::Color::White);
         scores.setOutlineColor(sf::Color::Black);
-        scores.setOutlineThickness(1.5f);
+        scores.setOutlineThickness(_window->getSize().x / 850.0f);
 
         personalBest.setFont(userFont);
-        personalBest.setCharacterSize(40);
+        personalBest.setCharacterSize(static_cast<uint32_t> (_window->getSize().x / 25.0f));
+//        personalBest.setCharacterSize(50);
         personalBest.setFillColor(sf::Color::Yellow);
         personalBest.setOutlineColor(sf::Color::Black);
-        personalBest.setOutlineThickness(1.5f);
+        personalBest.setOutlineThickness(_window->getSize().x / 850.0f);
 
     }
 
@@ -40,7 +48,7 @@ namespace turbohikerSFML {
         auto lbPosition = _window->getView().getCenter() - Transformation::convertSizeToPixels( *_window, {0,1});
         lbShape.setPosition( lbPosition );
         _window->draw(lbShape);
-        title.setPosition({lbPosition.x, lbPosition.y - lbShape.getSize().y * 0.40f});
+        title.setPosition({lbPosition.x, lbPosition.y - lbShape.getSize().y * 0.25f});
         _window->draw(title);
 
         std::stringstream scoreStream;
@@ -61,7 +69,7 @@ namespace turbohikerSFML {
         scores.setString(scoreStream.str());
         auto scoreBounds = scores.getGlobalBounds();
         scores.setOrigin( scoreBounds.left + scoreBounds.width / 2.0f, scoreBounds.top + scoreBounds.height / 2.0f);
-        scores.setPosition( {lbPosition.x, lbPosition.y} );
+        scores.setPosition( {lbPosition.x, lbPosition.y + (lbShape.getSize().y * 0.025f)} );
         _window->draw(scores);
 
         saveHighScore(playerName);
@@ -69,7 +77,7 @@ namespace turbohikerSFML {
         personalBest.setString(highScoreStr);
         auto pbBounds = personalBest.getGlobalBounds();
         personalBest.setOrigin( pbBounds.left + pbBounds.width / 2.0f, pbBounds.top + pbBounds.height / 2.0f);
-        personalBest.setPosition({lbPosition.x, lbPosition.y + (lbShape.getSize().y * 0.35f)});
+        personalBest.setPosition({lbPosition.x, lbPosition.y + (lbShape.getSize().y * 0.25f)});
         _window->draw(personalBest);
 
     }

@@ -4,6 +4,7 @@
 #include "World.h"
 #include "../Logic/GameAI.h"
 #include "LeaderBoard.h"
+#include "Animation.h"
 
 
 namespace turbohikerSFML {
@@ -32,6 +33,11 @@ namespace turbohikerSFML {
 
         std::shared_ptr<World> world;
         std::shared_ptr<sf::Texture> tileSet;
+
+        std::shared_ptr<sf::Texture> finishTexture;
+        std::unique_ptr<Animation> finishAnimation;
+        std::vector<sf::RectangleShape> finishPortals;
+
         sf::View gameView;
         sf::Font gameFont;
         LeaderBoard leaderBoard;
@@ -58,6 +64,8 @@ namespace turbohikerSFML {
 
         void calculateView(float dTime);
         void displayScore();
+
+        void generateFinishPortals(double _lastDrawnY);
     };
 
 }

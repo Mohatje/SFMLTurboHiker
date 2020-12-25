@@ -10,7 +10,7 @@ namespace turbohiker {
     }
 
     void LeaderBoard::printLeaderBoard(std::ostream &out) {
-//        out << "----------Leaderboard----------" << std::endl;
+        out << "----------Leaderboard----------" << std::endl;
         for (auto& scorePair : scoreObserverMap) {
             out << scorePair.first << ": " << *dynamic_cast<ScoreObserver*> (scorePair.second.get()) << std::endl;
         }

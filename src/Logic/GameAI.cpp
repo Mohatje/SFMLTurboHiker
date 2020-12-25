@@ -43,7 +43,6 @@ namespace turbohiker {
 
             double tmpDistance = sqrt( pow((curPosition.first - entPos.first), 2) + pow((curPosition.second - entPos.second), 2) );
 
-
             if (std::abs(tmpDistance) < 2.0)
                 ret.push_back(entity);
 
@@ -94,7 +93,8 @@ namespace turbohiker {
         for (auto &ent : toObserve) {
             if (    !(ent->getType() == EntityType::StaticHikerActive ||
                       ent->getType() == EntityType::MovingHikerActive ||
-                      ent->getType() == EntityType::RacingHiker) )
+                      ent->getType() == EntityType::RacingHiker       ||
+                      ent->getType() == EntityType::Player) )
                 continue;
 
             if (ent->getPosition().second < onePos.second) continue;
