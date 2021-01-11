@@ -49,7 +49,7 @@ namespace turbohikerSFML {
         bool gameFinished = false;
         double lastDrawnY = 3.0;
         double finishLine = 0.0;
-        double timeToFinish = 5.0;
+        double timeToFinish = 30.0;
 
     private:
         void generateMap();

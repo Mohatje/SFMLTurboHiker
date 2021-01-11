@@ -9,6 +9,10 @@ namespace turbohikerSFML {
         Animation(std::shared_ptr<sf::Texture>& texture, sf::Vector2u imageCount, float timeToSwitch);
         virtual ~Animation();
 
+        /**
+         * Getter for the frametime of the animation, m\n
+         * @return
+         */
         float getFrameTime() const;
 
         void setFrameTime(float frameTime);

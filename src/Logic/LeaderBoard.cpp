@@ -29,14 +29,10 @@ namespace turbohiker {
 
     void LeaderBoard::saveHighScore(std::string& playerName) const {
         int curScore = getScore(playerName);
-        std::fstream highScoreFile;
+        std::ofstream highScoreFile;
 
         int highScore = getHighScore(playerName);
         if (highScore < curScore) {
-            highScoreFile.clear();
-            highScoreFile.close();
-            highScoreFile.open(playerName + ".save", std::ios::trunc);
-            highScoreFile.close();
             highScoreFile.open(playerName + ".save");
             highScoreFile << curScore;
         }
@@ -45,12 +41,14 @@ namespace turbohiker {
 
     int LeaderBoard::getHighScore(const std::string& playerName) const {
         std::fstream highScoreFile(playerName + ".save");
-        if ( !highScoreFile.is_open() )
-            std::cerr << "Failed to open save file. Highscore is reset." << std::endl;
+        if ( !highScoreFile.is_open() ) {
+            std::cerr << "Failed to open save file. Creating new file." << std::endl;
+            highScoreFile.open(playerName + ".save", std::ios::out);
+        }
 
         std::string scoreStr;
         getline(highScoreFile, scoreStr);
-
+        highScoreFile.close();
         return scoreStr.empty() ? 0 : std::stoi(scoreStr);
     }
 }

@@ -52,13 +52,18 @@ namespace turbohikerSFML {
     void Game::init() {
 
         playerName = config["Settings"]["PlayerName"].as_string_or_default("Player");
+        if (playerName.size() > 12)
+            playerName = playerName.substr(0, 12);
+
+        float windowScalar = window->getSize().x < window->getSize().y ? window->getSize().x : window->getSize().y;
+
 
 
         playerScore.setFont(gameFont);
-        playerScore.setCharacterSize(static_cast<uint32_t> (window->getSize().x / 28.f));
+        playerScore.setCharacterSize(static_cast<uint32_t> (windowScalar / 21.f));
         playerScore.setFillColor(sf::Color::White);
         playerScore.setOutlineColor(sf::Color::Black);
-        playerScore.setOutlineThickness(window->getSize().x / 512.f);
+        playerScore.setOutlineThickness(windowScalar / 384.f);
 
 
         entFactory = FactoryCreator::getFactory("entity", window, config);
@@ -309,7 +314,6 @@ namespace turbohikerSFML {
                 world->handleGameEvent(ev);
             }
             if (gameFinished) {
-
                 continue;
             }
 

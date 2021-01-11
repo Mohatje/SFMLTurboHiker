@@ -8,6 +8,8 @@ namespace turbohikerSFML {
 
     void LeaderBoard::init(std::shared_ptr<sf::RenderWindow> &window, const sf::Font &userFont, std::string texturePath) {
         _window = window;
+        windowScalar = _window->getSize().x < _window->getSize().y ? _window->getSize().x : _window->getSize().y;
+
         if ( !lbTexture.loadFromFile(texturePath) ) {
             std::cerr << "Could not load leaderboard texture " + texturePath + ". Please check the configuration file." << std::endl;
             lbShape.setFillColor(sf::Color(0, 0, 0, 150));
@@ -19,28 +21,28 @@ namespace turbohikerSFML {
         lbShape.setOrigin(lbShape.getSize() / 2.0f);
 
         title.setFont(userFont);
-        title.setCharacterSize(static_cast<uint32_t> (_window->getSize().x / 25.0f));
+        title.setCharacterSize(static_cast<uint32_t> (windowScalar / 20.0f));
         title.setFillColor(sf::Color::White);
         title.setOutlineColor(sf::Color::Black);
-        title.setOutlineThickness(_window->getSize().x / 512.0f);
+        title.setOutlineThickness(windowScalar / 384.0f);
         title.setString("-==Leaderboard==-");
         auto titleBounds = title.getGlobalBounds();
         title.setOrigin( titleBounds.left + titleBounds.width / 2.0f, titleBounds.top + titleBounds.height / 2.0f);
 
 
         scores.setFont(userFont);
-        scores.setCharacterSize(static_cast<uint32_t> (_window->getSize().x / 45.0f));
+        scores.setCharacterSize(static_cast<uint32_t> (windowScalar / 32.0f));
 //        scores.setCharacterSize(40);
         scores.setFillColor(sf::Color::White);
         scores.setOutlineColor(sf::Color::Black);
-        scores.setOutlineThickness(_window->getSize().x / 850.0f);
+        scores.setOutlineThickness(windowScalar / 640.0f);
 
         personalBest.setFont(userFont);
-        personalBest.setCharacterSize(static_cast<uint32_t> (_window->getSize().x / 25.0f));
+        personalBest.setCharacterSize(static_cast<uint32_t> (windowScalar / 20.0f));
 //        personalBest.setCharacterSize(50);
         personalBest.setFillColor(sf::Color::Yellow);
         personalBest.setOutlineColor(sf::Color::Black);
-        personalBest.setOutlineThickness(_window->getSize().x / 850.0f);
+        personalBest.setOutlineThickness(windowScalar / 640.0f);
 
     }
 
@@ -59,10 +61,10 @@ namespace turbohikerSFML {
         }
 
         for (auto it = scoreMap.rbegin(); it != scoreMap.rend(); ++it ) {
-            scoreStream << std::setw(15);
-            scoreStream << std::left << (*it).second;
-            scoreStream << std::setw(15);
-            scoreStream << std::right << (*it).first << std::endl;
+            scoreStream << std::left << std::setw(15)
+                        << (*it).second
+                        << std::right << std::setw(15)
+                        << (*it).first << std::endl;
         }
 
 
