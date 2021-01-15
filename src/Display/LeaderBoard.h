@@ -1,13 +1,12 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include "../Logic/LeaderBoard.h"
-
+#include <SFML/Graphics.hpp>
 
 namespace turbohikerSFML {
 
-    class LeaderBoard : public turbohiker::LeaderBoard {
-    public:
-
+class LeaderBoard : public turbohiker::LeaderBoard
+{
+public:
         /**
          * Default Constructor
          */
@@ -19,15 +18,15 @@ namespace turbohikerSFML {
          * @param userFont the to be used font
          * @param texturePath background texture for the leaderboard
          */
-        void init(std::shared_ptr<sf::RenderWindow> &window, const sf::Font &userFont, std::string texturePath);
+        void init(std::shared_ptr<sf::RenderWindow>& window, const sf::Font& userFont, std::string texturePath);
 
         /**
          * Display method to display the leaderboard
          * @param playerName name of the player, to be used to load the highscore
          */
-        void display(std::string &playerName);
+        void display(std::string& playerName);
 
-    private:
+private:
         float windowScalar;
         sf::Texture lbTexture;
         sf::RectangleShape lbShape;
@@ -35,7 +34,6 @@ namespace turbohikerSFML {
         sf::Text title;
         sf::Text scores;
         sf::Text personalBest;
-    };
+};
 
-}
-
+} // namespace turbohikerSFML

@@ -1,13 +1,13 @@
 #pragma once
+#include "../Logic/Entity.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include "../Logic/Entity.h"
 
 namespace turbohikerSFML {
 
-    class TileEntity : public turbohiker::Entity {
-    public:
-
+class TileEntity : public turbohiker::Entity
+{
+public:
         /**
          * Default constructor
          */
@@ -22,13 +22,9 @@ namespace turbohikerSFML {
          * @param texPosition   tile entity position within the texture (using tile map)
          * @param stationary    whether or not the entity should move with the game view
          */
-        TileEntity(const std::weak_ptr<sf::RenderWindow> &window,
-                   std::pair<double, double> position,
-                   std::pair<double, double> size,
-                   std::shared_ptr<sf::Texture> texture,
-                   sf::Vector2u texPosition,
+        TileEntity(const std::weak_ptr<sf::RenderWindow>& window, std::pair<double, double> position,
+                   std::pair<double, double> size, std::shared_ptr<sf::Texture> texture, sf::Vector2u texPosition,
                    bool stationary = false);
-
 
         void display() override;
 
@@ -38,9 +34,9 @@ namespace turbohikerSFML {
 
         turbohiker::EntityType getType() const override { return turbohiker::EntityType::Tile; }
 
-        void setPosition(const std::pair<double, double> &_position) override;
-        void setSize(const std::pair<double, double> &_size) override;
-        void setOrigin(const std::pair<double, double> &_origin) override;
+        void setPosition(const std::pair<double, double>& _position) override;
+        void setSize(const std::pair<double, double>& _size) override;
+        void setOrigin(const std::pair<double, double>& _origin) override;
 
         /**
          * Change whether or not the entity should move with the game view
@@ -48,7 +44,7 @@ namespace turbohikerSFML {
          */
         void setStatic(bool _static);
 
-    private:
+private:
         std::weak_ptr<sf::RenderWindow> _window;
         std::shared_ptr<sf::Texture> tileSet;
         std::unique_ptr<sf::RectangleShape> tileRect;
@@ -56,6 +52,6 @@ namespace turbohikerSFML {
         void init(std::pair<double, double> position, std::pair<double, double> size);
 
         bool stationary;
-    };
+};
 
-}
+} // namespace turbohikerSFML

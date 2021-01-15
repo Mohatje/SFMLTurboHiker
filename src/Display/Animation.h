@@ -2,12 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-
 namespace turbohikerSFML {
-    class Animation {
-    public:
+class Animation
+{
+public:
         /**
-         * Contructor for the Animation Class
+         * Constructor for the Animation Class
          * @param texture texture which contains the animations
          * @param imageCount tuple of integers that describes how many images there are within the texture
          * @param timeToSwitch frametime (time to switch to the next animation frame)
@@ -35,15 +35,15 @@ namespace turbohikerSFML {
          */
         void update(int row, float time, bool flip = false);
 
-    public:
+public:
         sf::IntRect textureRect;
-    private:
+
+private:
         sf::Vector2u imageCount;
         sf::Vector2u currentImage;
 
         float elapsedTime;
         float frameTime;
-    };
+};
 
-}
-
+} // namespace turbohikerSFML

@@ -3,8 +3,9 @@
 
 namespace turbohiker {
 
-    class PassingHiker2 : public Entity {
-    public:
+class PassingHiker2 : public Entity
+{
+public:
         void display() override;
         void update(float dTime) override;
         bool doTypeSpecificAction() override;
@@ -18,13 +19,14 @@ namespace turbohiker {
         /**
          * Setter for the isActive flag of the Static Hiker
          * @param active boolean to which the flag should be set
-        */
+         */
         void setActive(bool active);
         virtual void spawn(double playerY);
 
         EntityType getType() const override;
-    private:
-        bool active = true;
-    };
 
-}
+private:
+        bool active = true;
+};
+
+} // namespace turbohiker

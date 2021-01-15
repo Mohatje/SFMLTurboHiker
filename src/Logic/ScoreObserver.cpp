@@ -1,72 +1,70 @@
 #include "ScoreObserver.h"
 
-
 namespace turbohiker {
 
-    void ScoreObserver::onNotify(ObservableEvent event) {
-        if (finished) return;
+void ScoreObserver::onNotify(ObservableEvent event)
+{
+        if (finished)
+                return;
 
         // If player is finished then we don't change their score, else we change it based on the observed event
         switch (event) {
-            case ObservableEvent::None:
+        case ObservableEvent::None:
                 break;
-            case ObservableEvent::FinishedFirst:
+        case ObservableEvent::FinishedFirst:
                 score += 300;
                 finished = true;
                 break;
-            case ObservableEvent::FinishedSecond:
+        case ObservableEvent::FinishedSecond:
                 score += 275;
                 finished = true;
                 break;
-            case ObservableEvent::FinishedThird:
+        case ObservableEvent::FinishedThird:
                 score += 200;
                 finished = true;
                 break;
-            case ObservableEvent::FinishedForth:
+        case ObservableEvent::FinishedForth:
                 score += 125;
                 finished = true;
                 break;
-            case ObservableEvent::FinishedFifth:
+        case ObservableEvent::FinishedFifth:
                 score += 50;
                 finished = true;
                 break;
-            case ObservableEvent::FinishedSixth:
+        case ObservableEvent::FinishedSixth:
                 score += 5;
                 finished = true;
                 break;
-            case ObservableEvent::Collision:
+        case ObservableEvent::Collision:
                 score -= 10;
                 break;
-            case ObservableEvent::Yelled:
+        case ObservableEvent::Yelled:
                 score -= 5;
                 break;
-            case ObservableEvent::WorldSpeed:
+        case ObservableEvent::WorldSpeed:
                 score += 5;
                 break;
-            case ObservableEvent::CurrentlyFirst:
+        case ObservableEvent::CurrentlyFirst:
                 score += 15;
                 break;
-            case ObservableEvent::CurrentlySecond:
+        case ObservableEvent::CurrentlySecond:
                 score += 10;
                 break;
-            case ObservableEvent::CurrentlyThird:
+        case ObservableEvent::CurrentlyThird:
                 score += 5;
                 break;
-            case ObservableEvent::CurrentlyForth:
+        case ObservableEvent::CurrentlyForth:
                 score += 2;
                 break;
-            case ObservableEvent::CurrentlyFifth:
+        case ObservableEvent::CurrentlyFifth:
                 score += 1;
                 break;
-            case ObservableEvent::CurrentlySixth:
+        case ObservableEvent::CurrentlySixth:
                 score += 0;
                 break;
         }
-
-    }
-
-    int ScoreObserver::getValue() {
-        return score;
-    }
-
 }
+
+int ScoreObserver::getValue() { return score; }
+
+} // namespace turbohiker

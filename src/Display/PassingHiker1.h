@@ -1,14 +1,14 @@
 #pragma once
-#include <memory>
-#include <SFML/Graphics.hpp>
-#include "../Parser/ini_configuration.h"
 #include "../Logic/PassingHiker1.h"
+#include "../Parser/ini_configuration.h"
+#include <SFML/Graphics.hpp>
+#include <memory>
 
 namespace turbohikerSFML {
 
-    class PassingHiker1 : public turbohiker::PassingHiker1 {
-    public:
-
+class PassingHiker1 : public turbohiker::PassingHiker1
+{
+public:
         /**
          * Default Constructor
          */
@@ -19,7 +19,7 @@ namespace turbohikerSFML {
          * @param window weak pointer to the game window
          * @param configFile config file from which we load the hiker's attributes
          */
-        PassingHiker1(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile);
+        PassingHiker1(const std::weak_ptr<sf::RenderWindow>& window, const ini::Configuration& configFile);
 
         void display() override;
         void update(float dTime) override;
@@ -37,12 +37,13 @@ namespace turbohikerSFML {
          */
         void spawn(double playerY);
 
-        void setPosition(const std::pair<double, double> &_position) override;
-        void setSize(const std::pair<double, double> &_size) override;
+        void setPosition(const std::pair<double, double>& _position) override;
+        void setSize(const std::pair<double, double>& _size) override;
 
-        void setOrigin(const std::pair<double, double> &_origin) override;
+        void setOrigin(const std::pair<double, double>& _origin) override;
         void setActive(bool _active) override;
-    private:
+
+private:
         std::weak_ptr<sf::RenderWindow> _window;
         static std::unique_ptr<sf::Texture> obstacleTexture;
 
@@ -50,6 +51,6 @@ namespace turbohikerSFML {
         sf::IntRect activeRect;
 
         sf::IntRect inactiveRect;
-    };
+};
 
-}
+} // namespace turbohikerSFML

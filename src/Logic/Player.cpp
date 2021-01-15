@@ -1,15 +1,11 @@
 #include "Player.h"
 #include "Random.h"
 
-
 namespace turbohiker {
-    void Player::display() {    }
+void Player::display() {}
 
-    void Player::update(float dTime) {    }
+void Player::update(float dTime) {}
 
-    bool Player::doTypeSpecificAction() {
-        return false;
-    }
+bool Player::doTypeSpecificAction() { return false; }
 
-
-}
+} // namespace turbohiker

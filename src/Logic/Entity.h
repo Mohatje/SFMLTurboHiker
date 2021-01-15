@@ -1,13 +1,13 @@
 #pragma once
+#include "Observable.h"
+#include <memory>
 #include <utility>
 #include <vector>
-#include <memory>
-#include "Observable.h"
-
 
 namespace turbohiker {
 
-    enum class EntityAIState {
+enum class EntityAIState
+{
         Invalid = 0,
         Default = 1,
         SpeedUp = 2,
@@ -19,9 +19,10 @@ namespace turbohiker {
         Stuck = 8,
         Finished = 9,
         Idle = 10
-    };
+};
 
-    enum class EntityType {
+enum class EntityType
+{
         Invalid = 0,
         Player = 1,
         RacingHiker = 2,
@@ -31,11 +32,11 @@ namespace turbohiker {
         MovingHikerInactive = 6,
         World = 7,
         Tile = 8
-    };
+};
 
-    class Entity : public Observable {
-    public:
-
+class Entity : public Observable
+{
+public:
         /**
          * Default Constructor
          */
@@ -44,7 +45,7 @@ namespace turbohiker {
          * Default copy constructor
          * @param cpy other entity
          */
-        Entity(const Entity &cpy) = default;
+        Entity(const Entity& cpy) = default;
         /**
          * Default Destructor
          */
@@ -54,43 +55,43 @@ namespace turbohiker {
          * Sets position of said entity to the provided position
          * @param _position a tuple containing doubles indicating the position
          */
-        virtual void setPosition(const std::pair<double, double> &_position);
+        virtual void setPosition(const std::pair<double, double>& _position);
 
         /**
          * Sets velocity of said entity to the provided velocity
          * @param _velocity a tuple containing doubles indicating the velocity
          */
-        virtual void setVelocity(const std::pair<double, double> &_velocity);
+        virtual void setVelocity(const std::pair<double, double>& _velocity);
 
         /**
          * Sets size of said entity to the provided size
          * @param _size a tuple containing doubles indicating the set
          */
-        virtual void setSize(const std::pair<double, double> &_size);
+        virtual void setSize(const std::pair<double, double>& _size);
 
         /**
          * Sets origin of said entity to the provided origin (relative to entity size)
          * @param _origin a tuple containing doubles indicating the new origin
          */
-        virtual void setOrigin(const std::pair<double, double> &_origin);
+        virtual void setOrigin(const std::pair<double, double>& _origin);
 
         /**
          * Getter for the entity's position
          * @return tuple containing doubles indicating position
          */
-        virtual const std::pair<double, double> &getPosition() const;
+        virtual const std::pair<double, double>& getPosition() const;
 
         /**
          * Getter for the entity's velocity
          * @return tuple containing doubles indicating velocity
          */
-        virtual const std::pair<double, double> &getVelocity() const;
+        virtual const std::pair<double, double>& getVelocity() const;
 
         /**
          * Getter for the entity's size
          * @return tuple containing doubles indicating size
          */
-        virtual const std::pair<double, double> &getSize() const;
+        virtual const std::pair<double, double>& getSize() const;
 
         /**
          * Display function which handles the drawing of this entity.
@@ -99,7 +100,8 @@ namespace turbohiker {
 
         /**
          * Update function, handles things such as input control and movement
-         * @param dTime time between frames, this is a fixed timestep by default. Used to have uniform movement (not tied to fps)
+         * @param dTime time between frames, this is a fixed timestep by default. Used to have uniform movement (not
+         * tied to fps)
          */
         virtual void update(float dTime) = 0;
 
@@ -146,16 +148,14 @@ namespace turbohiker {
          */
         void setIsCurrentlyColliding(bool _isCurrentlyColliding);
 
-
-
-    private:
-        std::pair<double, double> position {0.0, 0.0}; // x, y position (should be the middle of the entity by default)
-        std::pair<double, double> velocity {0.0, 0.0}; // x, y velocity
-        std::pair<double, double> size {1.0, 1.0}; // x = width, y = height
-        std::pair<double, double> origin {0.0, 0.0}; // x = width, y = height
+private:
+        std::pair<double, double> position{0.0, 0.0}; // x, y position (should be the middle of the entity by default)
+        std::pair<double, double> velocity{0.0, 0.0}; // x, y velocity
+        std::pair<double, double> size{1.0, 1.0};     // x = width, y = height
+        std::pair<double, double> origin{0.0, 0.0};   // x = width, y = height
 
         EntityAIState curState = EntityAIState::Idle;
 
         bool currentlyColliding = false;
-    };
-}
+};
+} // namespace turbohiker

@@ -2,27 +2,27 @@
 #include "Entity.h"
 #include "Player.h"
 #include <deque>
+#include <memory>
 #include <set>
 #include <vector>
-#include <memory>
-
 
 namespace turbohiker {
 
-    class World : public Entity {
-    private:
+class World : public Entity
+{
+private:
         using EntityRef = std::unique_ptr<Entity>;
         using SharedEntityRef = std::shared_ptr<Entity>;
 
-        void setPosition(const std::pair<double, double> &_position) override {}
-        void setVelocity(const std::pair<double, double> &_velocity) override {}
-        void setSize(const std::pair<double, double> &_size) override {}
-        const std::pair<double, double> &getPosition() const override { return Entity::getPosition(); }
-        const std::pair<double, double> &getVelocity() const override { return Entity::getVelocity(); }
-        const std::pair<double, double> &getSize() const override { return Entity::getSize(); }
+        void setPosition(const std::pair<double, double>& _position) override {}
+        void setVelocity(const std::pair<double, double>& _velocity) override {}
+        void setSize(const std::pair<double, double>& _size) override {}
+        const std::pair<double, double>& getPosition() const override { return Entity::getPosition(); }
+        const std::pair<double, double>& getVelocity() const override { return Entity::getVelocity(); }
+        const std::pair<double, double>& getSize() const override { return Entity::getSize(); }
         double getCollisionForce(EntityType typeOne, EntityType typeTwo);
 
-    public:
+public:
         /**
          * Default constructor
          */
@@ -59,7 +59,7 @@ namespace turbohiker {
          * Getter for the world entities
          * @return world entities
          */
-        std::vector<SharedEntityRef> &getEntities();
+        std::vector<SharedEntityRef>& getEntities();
 
         /**
          * Method which adds (Terrain) Tiles to the world tile vector
@@ -71,7 +71,7 @@ namespace turbohiker {
          * Getter for the world tiles
          * @return world tiles
          */
-        std::vector<SharedEntityRef> &getTiles();
+        std::vector<SharedEntityRef>& getTiles();
 
         /**
          * Get the playable Player's size
@@ -95,7 +95,7 @@ namespace turbohiker {
          * Get the playable Player's pointer
          * @return player pointer
          */
-        const SharedEntityRef &getPlayerPtr();
+        const SharedEntityRef& getPlayerPtr();
 
         /**
          * Get the world speed ( current world movement speed (vertical) )
@@ -116,7 +116,7 @@ namespace turbohiker {
          * @param entTwo Second entity to check
          * @return true if the entities are colliding, false otherwise
          */
-        bool checkCollision(const SharedEntityRef &entOne, const SharedEntityRef &entTwo);
+        bool checkCollision(const SharedEntityRef& entOne, const SharedEntityRef& entTwo);
 
         /**
          * Method that `removes` the nearest obstacle to said caller \n
@@ -125,7 +125,7 @@ namespace turbohiker {
          * @param entPos position of the entity
          * @return true if an obstacle has been removed, false otherwise
          */
-        virtual bool removeNearestObstacle(const std::pair<double, double> &entPos);
+        virtual bool removeNearestObstacle(const std::pair<double, double>& entPos);
 
         /**
          * Getter for the yelled boolean
@@ -160,11 +160,12 @@ namespace turbohiker {
         bool checkForFinish(double finishLine);
 
         /**
-         * Method to observe the order in which the entities are currently situated, and communicates it to their Observers
+         * Method to observe the order in which the entities are currently situated, and communicates it to their
+         * Observers
          */
         virtual void observeOrder();
 
-    private:
+private:
         std::vector<SharedEntityRef> worldEntities;
         std::deque<SharedEntityRef> worldEntityDeque;
 
@@ -175,6 +176,6 @@ namespace turbohiker {
         float speed = 0.0f;
 
         bool yelled = false;
-    };
+};
 
-}
+} // namespace turbohiker

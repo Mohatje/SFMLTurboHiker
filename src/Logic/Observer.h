@@ -1,13 +1,14 @@
 #pragma once
 
-#include <ostream>
 #include <memory>
+#include <ostream>
 
 namespace turbohiker {
 
-    class Entity;
+class Entity;
 
-    enum class ObservableEvent {
+enum class ObservableEvent
+{
         None = 0,
         FinishedFirst = 1,
         FinishedSecond = 2,
@@ -26,10 +27,11 @@ namespace turbohiker {
         CurrentlyForth = 13,
         CurrentlyFifth = 14,
         CurrentlySixth = 15
-    };
+};
 
-    class Observer {
-    public:
+class Observer
+{
+public:
         /**
          * Default constructor
          */
@@ -50,8 +52,6 @@ namespace turbohiker {
          * @return value of observer
          */
         virtual int getValue() = 0;
+};
 
-    };
-
-}
-
+} // namespace turbohiker

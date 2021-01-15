@@ -2,16 +2,15 @@
 #include <random>
 
 namespace turbohiker {
-    // Random number generator class
-    class Random {
-    public:
-
+// Random number generator class
+class Random
+{
+public:
         /**
          * Static method to get the random class object, this is a unique object\n
          * @return random class object
          */
         static Random& getInstance();
-
 
         /**
          * Static method to return a random float number, between 0 and 1 by default\n
@@ -36,8 +35,8 @@ namespace turbohiker {
         static int randInt();
         static int randInt(int min, int max);
         static int randInt(int max);
-    private:
 
+private:
         Random(); // Use of a private constructor to prevent the construction of more than 1 instance
 
         Random(const Random& cpy);
@@ -55,8 +54,6 @@ namespace turbohiker {
 
         std::uniform_real_distribution<> fDist;
         std::uniform_int_distribution<> iDist;
+};
 
-    };
-
-}
-
+} // namespace turbohiker

@@ -1,13 +1,15 @@
 #pragma once
 #include "Observer.h"
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace turbohiker {
-    class Observable {
-    public:
+class Observable
+{
+public:
         using SharedObserverRef = std::shared_ptr<Observer>;
-    public:
+
+public:
         /**
          * Method to add an Observer to the List of observers of an Observable Entity
          * @param observer shared pointer to an observer
@@ -20,7 +22,7 @@ namespace turbohiker {
          */
         virtual void notifyObservers(ObservableEvent event);
 
-    private:
+private:
         std::vector<SharedObserverRef> observerVector;
-    };
-}
+};
+} // namespace turbohiker

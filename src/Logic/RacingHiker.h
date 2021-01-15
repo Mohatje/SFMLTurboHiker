@@ -2,14 +2,16 @@
 #include "Entity.h"
 
 namespace turbohiker {
-    class RacingHiker : public Entity {
-    public:
+class RacingHiker : public Entity
+{
+public:
         void display() override;
         void update(float dTime) override;
         bool doTypeSpecificAction() override;
 
         EntityType getType() const override { return EntityType::RacingHiker; }
-    private:
+
+private:
         bool action = false;
         bool isMovingR = false;
         bool isMovingL = false;
@@ -21,5 +23,5 @@ namespace turbohiker {
          * @param pretext pretext
          */
         void printState(char* pretext);
-    };
-}
+};
+} // namespace turbohiker

@@ -1,17 +1,16 @@
 #pragma once
-#include "FactoryCreator.h"
-#include "../Parser/ini_configuration.h"
-#include "World.h"
 #include "../Logic/GameAI.h"
-#include "LeaderBoard.h"
+#include "../Parser/ini_configuration.h"
 #include "Animation.h"
-
+#include "FactoryCreator.h"
+#include "LeaderBoard.h"
+#include "World.h"
 
 namespace turbohikerSFML {
 
-    class Game {
-    public:
-
+class Game
+{
+public:
         /**
          * Default game constructor, uses "./Config/config.ini" as config file path by default
          */
@@ -21,10 +20,10 @@ namespace turbohikerSFML {
          * Game constructor
          * @param configPath config file path
          */
-        Game(const std::string &configPath );
+        Game(const std::string& configPath);
         ~Game() = default;
 
-    public:
+public:
         /**
          * Method to run the game
          */
@@ -35,11 +34,11 @@ namespace turbohikerSFML {
          */
         void init();
 
-    private:
+private:
         Game(const Game& copy);
         Game& operator=(const Game& rhs);
 
-    private:
+private:
         using EntityRef = std::unique_ptr<turbohiker::Entity>;
 
         std::unique_ptr<turbohiker::AbstractFactory> entFactory;
@@ -66,7 +65,7 @@ namespace turbohikerSFML {
         double finishLine = 0.0;
         double timeToFinish = 30.0;
 
-    private:
+private:
         void generateMap();
         void correctOutOfBounds();
         void generateStrip(sf::Vector2u Left, sf::Vector2u Middle, sf::Vector2u Right, double y);
@@ -81,7 +80,6 @@ namespace turbohikerSFML {
         void displayScore();
 
         void generateFinishPortals(double _lastDrawnY);
-    };
+};
 
-}
-
+} // namespace turbohikerSFML

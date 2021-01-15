@@ -1,17 +1,15 @@
 #pragma once
 #include "../Logic/RacingHiker.h"
-#include "Animation.h"
 #include "../Parser/ini_configuration.h"
-#include <memory>
+#include "Animation.h"
 #include <SFML/Graphics.hpp>
-
-
+#include <memory>
 
 namespace turbohikerSFML {
 
-    class RacingHiker : public turbohiker::RacingHiker {
-    public:
-
+class RacingHiker : public turbohiker::RacingHiker
+{
+public:
         /**
          * Default Constructor
          */
@@ -22,23 +20,23 @@ namespace turbohikerSFML {
          * @param window weak pointer to the game window
          * @param configFile config file from which we load the hiker's attributes
          */
-        RacingHiker(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile);
+        RacingHiker(const std::weak_ptr<sf::RenderWindow>& window, const ini::Configuration& configFile);
 
         /**
          * Method to initialize the Racing Hiker
          */
         void init();
 
-        void display () override;
+        void display() override;
         void update(float dTime) override;
 
-        void move(const std::pair<double, double> &offset) override;
-        void setPosition(const std::pair<double, double> &_position) override;
-        void setVelocity(const std::pair<double, double> &_velocity) override;
-        void setSize(const std::pair<double, double> &_size) override;
-        void setOrigin(const std::pair<double, double> &_origin) override;
+        void move(const std::pair<double, double>& offset) override;
+        void setPosition(const std::pair<double, double>& _position) override;
+        void setVelocity(const std::pair<double, double>& _velocity) override;
+        void setSize(const std::pair<double, double>& _size) override;
+        void setOrigin(const std::pair<double, double>& _origin) override;
 
-    private:
+private:
         std::weak_ptr<sf::RenderWindow> window;
         std::unique_ptr<Animation> anim;
         std::shared_ptr<sf::Texture> racerTexture;
@@ -46,6 +44,6 @@ namespace turbohikerSFML {
         bool textureFlipped = false;
 
         int runAnimation;
-    };
+};
 
-}
+} // namespace turbohikerSFML

@@ -1,16 +1,16 @@
 #pragma once
 #include "Observer.h"
-#include <iostream>
-#include <ostream>
 #include <fstream>
+#include <iostream>
 #include <map>
 #include <memory>
-
+#include <ostream>
 
 namespace turbohiker {
 
-    class LeaderBoard {
-    public:
+class LeaderBoard
+{
+public:
         /**
          * Default constructor
          */
@@ -37,14 +37,14 @@ namespace turbohiker {
          * Getter for the score observers dictionary.
          * @return the dictionary in format {string: Observer}
          */
-        const std::map<std::string, std::shared_ptr<Observer>> &getScoreObserverMap() const;
+        const std::map<std::string, std::shared_ptr<Observer>>& getScoreObserverMap() const;
 
         /**
          * Getter for the score of a specific observer/hiker
          * @param name hiker name
          * @return the score for the chosen hiker, if they exist
          */
-        int getScore(std::string &name) const;
+        int getScore(std::string& name) const;
 
         /**
          * Method which regulates the saving of highscores
@@ -60,8 +60,8 @@ namespace turbohiker {
          */
         int getHighScore(const std::string& playerName) const;
 
-    private:
+private:
         std::map<std::string, std::shared_ptr<Observer>> scoreObserverMap;
-    };
+};
 
-}
+} // namespace turbohiker

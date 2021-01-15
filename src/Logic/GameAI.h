@@ -3,12 +3,11 @@
 #include "World.h"
 #include <memory>
 
-
 namespace turbohiker {
 
-
-    class GameAI {
-    public:
+class GameAI
+{
+public:
         // Public interfaces for the user to interact with the GameAI class
 
         /**
@@ -17,13 +16,13 @@ namespace turbohiker {
          * @param worldPtr shared pointer to the world object
          * @return GameAI Instance
          */
-        static GameAI &instantiateAI(std::shared_ptr<World> worldPtr);
+        static GameAI& instantiateAI(std::shared_ptr<World> worldPtr);
 
         /**
          * Method to get the singleton instance of the GameAI Object
          * @return GameAI Instance
          */
-        static GameAI &getInstance();
+        static GameAI& getInstance();
 
         /**
          * Static method to update a hiker with an AI decision
@@ -32,20 +31,20 @@ namespace turbohiker {
          */
         static void updateHiker(std::shared_ptr<Entity>& hiker, float dTime);
 
-    private:
+private:
         GameAI() = default;
         ~GameAI() = default;
 
-    private:
+private:
         static GameAI sharedInstance;
         void _updateHiker(std::shared_ptr<Entity>& hiker, float dTime);
         std::weak_ptr<World> _world;
 
-    private:
+private:
         // Actual implementation
 
-        void _updateMovingHiker(std::shared_ptr<Entity> &hiker, float dTime);
-        void _updateRacer(std::shared_ptr<Entity> &hiker, float dTime);
+        void _updateMovingHiker(std::shared_ptr<Entity>& hiker, float dTime);
+        void _updateRacer(std::shared_ptr<Entity>& hiker, float dTime);
 
         /**
          * Function to get all entities within an entity's sight.\n
@@ -53,11 +52,9 @@ namespace turbohiker {
          * @param hiker The entity for which you want to calculate the sight
          * @return A vector with pointers to each visible entity within the described sight size
          */
-        std::vector<std::shared_ptr<Entity>> getEntitiesInSight(std::shared_ptr<Entity> &hiker);
+        std::vector<std::shared_ptr<Entity>> getEntitiesInSight(std::shared_ptr<Entity>& hiker);
 
-        void avoidObstacle(std::shared_ptr<Entity> &hiker, std::shared_ptr<Entity> &ent);
-    };
+        void avoidObstacle(std::shared_ptr<Entity>& hiker, std::shared_ptr<Entity>& ent);
+};
 
-}
-
-
+} // namespace turbohiker

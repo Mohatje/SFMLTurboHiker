@@ -1,34 +1,32 @@
 #pragma once
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <map>
-#include <SFML/Window/Keyboard.hpp>
-
-
 
 namespace turbohikerSFML {
-    class KeyConfigHelper {
-    public:
-
+class KeyConfigHelper
+{
+public:
         /**
          * Static method to convert characters to sf::Keyboard::Keys
-         * @param keyIndentifier the to be converted character
+         * @param keyIdentifier the to be converted character
          * @return sf::Keyboard::Key which corresponds with the given input
          */
-        static sf::Keyboard::Key keyboardFromString(const std::string &keyIndentifier);
+        static sf::Keyboard::Key keyboardFromString(const std::string& keyIdentifier);
 
         /**
          * Getter to get the singleton instance of the KeyConfigHelper
          * @return KeyConfigHelper singleton
          */
-        static KeyConfigHelper &getInstance();
+        static KeyConfigHelper& getInstance();
 
-    private:
+private:
         KeyConfigHelper();
         KeyConfigHelper(const KeyConfigHelper& cpy);
         KeyConfigHelper& operator=(const KeyConfigHelper& rhs);
         ~KeyConfigHelper() = default;
 
         std::map<std::string, sf::Keyboard::Key> keyMap;
-    };
+};
 
-}
+} // namespace turbohikerSFML
