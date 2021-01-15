@@ -6,6 +6,9 @@
 namespace turbohikerSFML {
 
     PassingHiker2::PassingHiker2(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile) : _window(window) {
+
+        // Loading hikers parameters and loading textures then initializing
+
         std::string txPath = configFile["MovingObstacle"]["Texture"].as_string_or_default("./media/Pipoya/Enemy/Enemy 06-1.png");
         obstacleRect = std::unique_ptr<sf::RectangleShape> (new sf::RectangleShape( ) );
         obstacleTexture = std::make_shared<sf::Texture> ( );
@@ -40,8 +43,6 @@ namespace turbohikerSFML {
         turbohiker::PassingHiker2::update(dTime);
         anim->update(runAnimation, dTime);
         obstacleRect->setTextureRect(anim->textureRect);
-
-
     }
 
     void PassingHiker2::display() {

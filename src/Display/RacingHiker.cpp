@@ -4,6 +4,9 @@
 namespace turbohikerSFML {
 
     RacingHiker::RacingHiker(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile) : window(window) {
+
+        // Loading hikers parameters and loading textures then initializing
+
         std::string texturePath = configFile["RacingHiker"]["Texture"].as_string_or_die();
         racerTexture = std::make_shared<sf::Texture> ( );
 
@@ -36,13 +39,14 @@ namespace turbohikerSFML {
     void RacingHiker::update(float dTime) {
         if (getCurState() == turbohiker::EntityAIState::Finished)
             return;
-
+        // Run base class update and then do some SFML specific things (texture & animation)
         turbohiker::RacingHiker::update(dTime);
         auto curVelocity = getVelocity();
         textureFlipped = curVelocity.first < 0.0;
+
+        // Makes the animations faster when the hiker goes faster
         double animModifier = std::abs(curVelocity.second) > 1.f ? std::abs(curVelocity.second) : 1.f;
         animModifier = animModifier > std::abs(curVelocity.first) ? animModifier : std::abs(curVelocity.first);
-
         anim->update(runAnimation, dTime * float(animModifier), textureFlipped);
         racerRect->setTextureRect(anim->textureRect);
     }

@@ -1,14 +1,19 @@
 #include "World.h"
+#include "PassingHiker1.h"
+#include <cmath>
 #include <iostream>
 #include <algorithm>
 
 
 namespace turbohiker {
 
+    // Obviously world is not movable
     void World::move(const std::pair<double, double> &offset) {     }
 
     // Will be using this function for collision control
     bool World::doTypeSpecificAction() {
+
+        // Loop through entites, test for collisions, observe collisions, notify observers of said collisions
         for (uint32_t i = 0; i < worldEntities.size() - 1; i++) {
             bool hasCollided = false;
             if ( !(worldEntities[i]->getType() == EntityType::Player || worldEntities[i]->getType() == EntityType::RacingHiker) ) continue;
@@ -29,6 +34,7 @@ namespace turbohiker {
 
         }
 
+        // Test for yelling, remove nearest obstacle if someone yelled
         for (auto& ent : worldEntities) {
             if (ent->getType() == EntityType::Player || ent->getType() == EntityType::RacingHiker) {
                 bool entAction = ent->doTypeSpecificAction();
@@ -44,11 +50,46 @@ namespace turbohiker {
         return false;
     }
 
-    bool World::removeNearestObstacle(const std::pair<double, double> &entPos) {
-        return false;
+    bool World::removeNearestObstacle(const std::pair<double, double> &distPos) {
+        double distance = 1000.0;
+        SharedEntityRef closestEnt;
+
+        // Loop through entities and get the closest entity
+        // If two entities are just as close to the yelling entity then the latest one in the vector gets chosen
+        for (auto& ent : getEntities()) {
+            auto entType = ent->getType();
+            if (entType == turbohiker::EntityType::StaticHikerActive || entType == turbohiker::EntityType::MovingHikerActive) {
+                auto entPos = ent->getPosition();
+                if (entPos.second < distPos.second) {
+                    continue;
+                }
+
+                double tmpDistance = sqrt(pow((distPos.first - entPos.first), 2) + pow((distPos.second - entPos.second), 2) );
+                closestEnt = distance > tmpDistance ? ent : closestEnt;
+                distance = distance > tmpDistance ? tmpDistance : distance;
+            }
+        }
+
+        if (distance > 15) return false;
+
+        if (closestEnt->getType() == turbohiker::EntityType::StaticHikerActive) {
+            // Using raw pointer here for a bit, shouldn't pose any memory problem though
+            // Since the raw pointer is single use only thing anyways.
+            // The deletion will still happen as per unique ptr instruction
+            // Not too worried about its performance implications because this isn't called very often.
+            dynamic_cast<PassingHiker1*> (closestEnt.get())->setActive(false);
+        } else {
+            closestEnt->setCurState(turbohiker::EntityAIState::SlowDown);
+        }
+        return true;
+
     }
 
     double World::getCollisionForce(EntityType typeOne, EntityType typeTwo) {
+        // For each collision type we need a resolution force,
+        // this real number tells us what should move what,
+        // for example an entity cannot move a barrier or an obstacle shouldn't collide with a barrier etc
+        // Returning -1.0 for no collision control
         if (typeOne == EntityType::RacingHiker && typeTwo == EntityType::RacingHiker) return 0.5;
 
         // Two static obstacles
@@ -148,6 +189,7 @@ namespace turbohiker {
     }
 
     void World::display() {
+        // Display layers: map tiles -> inactive obstacles -> the rest
         for (auto& tile : worldTiles)
             tile->display();
         for (auto& entity : worldEntities) {
@@ -235,6 +277,8 @@ namespace turbohiker {
     }
 
     void World::removeObstacles(double bottomY) {
+        // Cleans up everything below the give y value
+        // Game view scrolls up, and to avoid making thousands of tile entities the older ones get removed
         for (int i = 0; i < worldEntities.size();) {
             if (worldEntities[i]->getPosition().second < bottomY) {
                 worldEntities[i].reset();
@@ -265,6 +309,7 @@ namespace turbohiker {
     }
 
     bool World::checkForFinish(double finishLine) {
+        // Making use of a static counter and vector to put the players in the order they finished in
         static int playersFinished = 0;
         static auto vec = worldEntities;
 
@@ -291,6 +336,8 @@ namespace turbohiker {
     }
 
     void World::observeOrder() {
+        // Observers the current order of the entities, same principle as the checkForFinish method
+        // The first couple of players in the lead get more points if they hold that position
         if (speed >= 500.f && player->getCurState() != EntityAIState::Finished) {
             player->notifyObservers(ObservableEvent::WorldSpeed);
         }

@@ -8,7 +8,17 @@ namespace turbohikerSFML {
 
     class PassingHiker1 : public turbohiker::PassingHiker1 {
     public:
+
+        /**
+         * Default Constructor
+         */
         PassingHiker1() = default;
+
+        /**
+         * Static Hiker constructor
+         * @param window weak pointer to the game window
+         * @param configFile config file from which we load the hiker's attributes
+         */
         PassingHiker1(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile);
 
         void display() override;
@@ -16,7 +26,15 @@ namespace turbohikerSFML {
         void move(const std::pair<double, double>& offset) override;
         bool doTypeSpecificAction() override;
 
+        /**
+         * Method to initialize the Static Hiker
+         */
         void init();
+
+        /**
+         * Method to spawn this hiker around the player, with a bit of randomness
+         * @param playerY current Y position of the player
+         */
         void spawn(double playerY);
 
         void setPosition(const std::pair<double, double> &_position) override;

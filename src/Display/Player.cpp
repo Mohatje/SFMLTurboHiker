@@ -9,6 +9,8 @@ namespace turbohikerSFML {
     Player::Player(const std::weak_ptr<sf::RenderWindow> &window,
                             const ini::Configuration &configFile) : _window(window) {
 
+        // Loading hikers parameters and loading textures & sounds then initializing
+
         std::string texturePath = configFile["Player"]["Texture"].as_string_or_die();
         std::string yellPath = configFile["Player"]["YellSound"].as_string_or_die();
         playerTexture = std::make_shared<sf::Texture>(  );
@@ -66,6 +68,7 @@ namespace turbohikerSFML {
         curVelocity.second -= ( curVelocity.second * 8.0 * dTime );
 
 
+        // input handling
         if (sf::Keyboard::isKeyPressed(Left)) {
             curVelocity.first -= 40.0 * dTime;
         }

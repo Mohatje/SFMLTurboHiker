@@ -4,7 +4,8 @@
 namespace turbohikerSFML {
     KeyConfigHelper::KeyConfigHelper() {
         #define INSERT_INTO_KEYMAP(keyIdentifier) this->keyMap[#keyIdentifier] = sf::Keyboard::keyIdentifier
-
+        // Using a macro to insert every possible key into the keyMap
+        // thanks to the internet for providing me with a list to all keys lol
         {
             INSERT_INTO_KEYMAP(Unknown);
             INSERT_INTO_KEYMAP(Escape);

@@ -5,6 +5,7 @@
 namespace turbohiker {
 
     Random::Random() {
+        // generate a mt-engine and seed it with the random device.
         std::mt19937 randomGen(randomDevice());
         randGenerator = randomGen;
     }
@@ -19,6 +20,8 @@ namespace turbohiker {
     }
 
     float Random::_randFloat(float min, float max) {
+        // internal random float generation
+        // small optimization where i dont change min/max values if they're the same as the previous call
         if (fDist.min() != min || fDist.max() != max)
             fDist = std::uniform_real_distribution<> (min, max);
 
@@ -26,7 +29,8 @@ namespace turbohiker {
     }
 
     int Random::_randInt(int min, int max) {
-        if (fDist.min() != min || fDist.max() != max)
+        // internal random int generation
+        if (iDist.min() != min || iDist.max() != max)
             iDist = std::uniform_int_distribution<> (min, max);
 
         return iDist(getInstance().getGenerator());

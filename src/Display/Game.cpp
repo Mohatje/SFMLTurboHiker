@@ -13,6 +13,7 @@ namespace turbohikerSFML {
 
     Game::Game(const std::string &configPath) {
 
+        // Load config file
         try {
             std::ifstream config_in(configPath);
             config_in >> config;
@@ -22,17 +23,18 @@ namespace turbohikerSFML {
                         << ex.what() << std::endl;
         }
 
+        // Load window properties
         int width = config["Window"]["Width"].as_int_or_default(1280);
         int height = config["Window"]["Height"].as_int_or_default(720);
         bool vsync = config["Window"]["VSync"].as_bool_or_default(false);
         bool fullscreen = config["Window"]["Fullscreen"].as_bool_or_default(false);
 
+        // Load font
         std::string fontPath = config["Settings"]["FontPath"].as_string_or_die();
         if ( !gameFont.loadFromFile(fontPath) )
             std::cerr << "Could not load font " + fontPath + " . Please check the configuration file" << std::endl;
 
-
-
+        // create window
         if (fullscreen) {
             window = std::make_shared<sf::RenderWindow> (sf::VideoMode(width, height), "TurboHiker",
                                                          sf::Style::Fullscreen);
@@ -51,26 +53,29 @@ namespace turbohikerSFML {
 
     void Game::init() {
 
+        // truncate playername if it's more than 12 chars
         playerName = config["Settings"]["PlayerName"].as_string_or_default("Player");
         if (playerName.size() > 12)
             playerName = playerName.substr(0, 12);
 
+        // get a windowScalar to keep the text consistent across other resolutions
         float windowScalar = window->getSize().x < window->getSize().y ? window->getSize().x : window->getSize().y;
 
-
-
+        // Ready the score display
         playerScore.setFont(gameFont);
         playerScore.setCharacterSize(static_cast<uint32_t> (windowScalar / 21.f));
         playerScore.setFillColor(sf::Color::White);
         playerScore.setOutlineColor(sf::Color::Black);
         playerScore.setOutlineThickness(windowScalar / 384.f);
 
-
+        // create an entity factory & world
         entFactory = FactoryCreator::getFactory("entity", window, config);
         EntityRef worldEnt = entFactory->createEntity(turbohiker::EntityType::World);
         if (worldEnt->getType() != turbohiker::EntityType::World)
             std::cerr << "Factory did not return a World entity." << std::endl;
 
+        // Dynamic cast world entity to world class object, this way we can use world specific methods
+        // this conversion happens only once so no noticeable performance hit
         auto temp = dynamic_cast<World*> (worldEnt.release());
         ASSERT(temp != nullptr, "World pointer is not a valid World object.")
         world.reset(temp);
@@ -88,7 +93,9 @@ namespace turbohikerSFML {
 
         auto thWorld = std::static_pointer_cast<turbohiker::World> (world);
 
+        // instantiate ai
         auto& AI = turbohiker::GameAI::instantiateAI(thWorld);
+
         generateMap();
 
         std::string finishPortal = config["World"]["FinishPortal"].as_string_or_die();
@@ -101,6 +108,7 @@ namespace turbohikerSFML {
     }
 
     void Game::addRacers() {
+        // Add racers, their observers and names
         auto firstRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
         firstRacer->setPosition( {-2.5, -2.0} );
         auto secondRacer = entFactory->createEntity(turbohiker::EntityType::RacingHiker);
@@ -141,6 +149,7 @@ namespace turbohikerSFML {
     }
 
     void Game::addColliders() {
+        // Create the view colliders and add them to world
         auto bottomCollider = EntityRef (new TileEntity(window, {0.0, -3}, {8, 0.25},
                                                         nullptr, {0, 0}));
 
@@ -160,6 +169,7 @@ namespace turbohikerSFML {
     }
 
     void Game::generateMap() {
+        // Generate initial map
         std::string tileSetPath = config["World"]["TileSet"].as_string_or_die();
         tileSet = std::make_shared<sf::Texture> (  );
         if (!tileSet->loadFromFile(tileSetPath))
@@ -177,6 +187,8 @@ namespace turbohikerSFML {
     }
 
     void Game::generateStrip(sf::Vector2u Left, sf::Vector2u Middle, sf::Vector2u Right, double y) {
+        // Generate a horizontal `strip` of terrain, left middle and right are self explanatory
+        // these are all coordinates in the tilemap
         double x = -3.75;
         world->addTile(EntityRef(new TileEntity(window, {x, y}, {0.50, 0.50}, tileSet, Left)));
         for (uint8_t j = 0; j < 14; j++) {
@@ -200,14 +212,15 @@ namespace turbohikerSFML {
             if (ent->getType() != turbohiker::EntityType::Player && ent->getType() != turbohiker::EntityType::RacingHiker) continue;
             auto entPos = ent->getPosition();
             if (ent->getPosition().second < yCoordB) {
-                std::cout << "Game Over!" << entPos.first << ", " << entPos.second << std::endl;
                 ent->setVelocity( {0.0, 0.0} );
                 ent->setPosition( {entPos.first, yCoordB + 0.5} );
+                // Hmm perhaps punish them for trying to get out of bounds/getting stuck ?
             }
         }
     }
 
     void Game::spawnObstacle() {
+        // Executed every second, spawns a moving and static obstacle
         auto playerY = world->getPlayerPosition().second;
 
         {
@@ -228,8 +241,8 @@ namespace turbohikerSFML {
     }
 
     void Game::spawnFinishLine() {
-        std::cerr << "Spawned finish line " << std::endl;
 
+        // Spawning the finish line and terrain
         if (finishDrawn) {
             for (uint8_t i = 0; i < 11; i++) {
                 lastDrawnY += 0.5;
@@ -271,6 +284,7 @@ namespace turbohikerSFML {
     }
 
     void Game::tryToDraw() {
+        // attempt to generate a new terrain strip
         float topPixelY = gameView.getCenter().y - (gameView.getSize().y / 2);
         auto worldPos = Transformation::convertPosFromPixels(*window, {0, topPixelY});
 
@@ -292,7 +306,7 @@ namespace turbohikerSFML {
     void Game::run() {
         using clock = std::chrono::high_resolution_clock;
 
-
+        // declare timers
         double timer = 0.0;
         double finishTimer = 0.0;
         double updateTimer = 0.0;
@@ -306,6 +320,7 @@ namespace turbohikerSFML {
 
         timeToFinish += turbohiker::Random::randFloat(-5.f, 10.f);
         while (window->isOpen()) {
+            // close event polling & world event polling
             while (window->pollEvent(ev)) {
                 if (ev.type == sf::Event::Closed) {
                     window->close();
@@ -317,7 +332,7 @@ namespace turbohikerSFML {
                 continue;
             }
 
-
+            // update timers
             auto now = clock::now();
             dTime = std::chrono::duration_cast<std::chrono::duration<float>>(now - last).count();
             last = now;
@@ -325,6 +340,7 @@ namespace turbohikerSFML {
             updateTimer += dTime;
             finishTimer += dTime;
 
+            // obstacle & position timer
             while (timer >= 1.0) {
                 timer -= 1.0;
                 if (spawn)
@@ -335,6 +351,7 @@ namespace turbohikerSFML {
 
             }
 
+            // check if we should spawn the finish line
             if (timeToFinish > -1.0 && finishTimer >= timeToFinish) {
                 timeToFinish = -1.0;
                 finishDrawn = true;
@@ -342,6 +359,7 @@ namespace turbohikerSFML {
                 spawn = false;
             }
 
+            // Update world on a fixed delta
             while (updateTimer >= fixedDelta) {
                 world->update(float(fixedDelta));
                 world->doTypeSpecificAction();
@@ -357,6 +375,7 @@ namespace turbohikerSFML {
                 updateTimer -= fixedDelta;
             }
 
+            // draw elements to screen
             window->clear(sf::Color::Magenta);
             window->setView(gameView);
             finishAnimation->update(0, float(fixedDelta));
@@ -385,6 +404,7 @@ namespace turbohikerSFML {
     }
 
     void Game::generateFinishPortals(double _lastDrawnY) {
+        // generate finish portals
         double x = -3.50;
         for (int i = 0; i < 8; i++) {
             sf::RectangleShape tmp(Transformation::convertSizeToPixels(*window, {1.0, 1.0}));

@@ -10,6 +10,7 @@ namespace turbohikerSFML {
         _window = window;
         windowScalar = _window->getSize().x < _window->getSize().y ? _window->getSize().x : _window->getSize().y;
 
+        // Load background texture
         if ( !lbTexture.loadFromFile(texturePath) ) {
             std::cerr << "Could not load leaderboard texture " + texturePath + ". Please check the configuration file." << std::endl;
             lbShape.setFillColor(sf::Color(0, 0, 0, 150));
@@ -17,9 +18,11 @@ namespace turbohikerSFML {
             lbShape.setTexture(&lbTexture);
         }
 
+        // determine leaderboard size and origin
         lbShape.setSize( Transformation::convertSizeToPixels( *_window, {3.5, 3.25}) );
         lbShape.setOrigin(lbShape.getSize() / 2.0f);
 
+        // Setup leaderboard header
         title.setFont(userFont);
         title.setCharacterSize(static_cast<uint32_t> (windowScalar / 20.0f));
         title.setFillColor(sf::Color::White);
@@ -29,7 +32,7 @@ namespace turbohikerSFML {
         auto titleBounds = title.getGlobalBounds();
         title.setOrigin( titleBounds.left + titleBounds.width / 2.0f, titleBounds.top + titleBounds.height / 2.0f);
 
-
+        // Setup PB & scores attributes
         scores.setFont(userFont);
         scores.setCharacterSize(static_cast<uint32_t> (windowScalar / 32.0f));
 //        scores.setCharacterSize(40);
@@ -47,12 +50,14 @@ namespace turbohikerSFML {
     }
 
     void LeaderBoard::display(std::string &playerName) {
+        // Get lb position in pixels
         auto lbPosition = _window->getView().getCenter() - Transformation::convertSizeToPixels( *_window, {0,1});
         lbShape.setPosition( lbPosition );
         _window->draw(lbShape);
         title.setPosition({lbPosition.x, lbPosition.y - lbShape.getSize().y * 0.25f});
         _window->draw(title);
 
+        // get scores
         std::stringstream scoreStream;
         std::map<int, std::string> scoreMap;
         for ( auto observer : getScoreObserverMap() ) {
@@ -60,6 +65,7 @@ namespace turbohikerSFML {
             scoreMap[getScore(name)] = name;
         }
 
+        // output scores to a stream
         for (auto it = scoreMap.rbegin(); it != scoreMap.rend(); ++it ) {
             scoreStream << std::left << std::setw(15)
                         << (*it).second
@@ -67,7 +73,7 @@ namespace turbohikerSFML {
                         << (*it).first << std::endl;
         }
 
-
+        // draw sf::Text
         scores.setString(scoreStream.str());
         auto scoreBounds = scores.getGlobalBounds();
         scores.setOrigin( scoreBounds.left + scoreBounds.width / 2.0f, scoreBounds.top + scoreBounds.height / 2.0f);

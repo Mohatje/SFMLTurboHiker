@@ -25,6 +25,14 @@ namespace turbohiker {
         static float randFloat(float min, float max);
         static float randFloat(float max);
 
+        /**
+         * Static method to return a random int number, between 0 and 100 by default\n
+         * Additionally there are two other methods, namely randInt(int min, int max) and randInt(int max)\n
+         *
+         * @param min (optional) Specify the minimum value for the generator
+         * @param max (optional) Specify the maximum value for the generator
+         * @return a random int between the chosen (or not) min/max values.
+         */
         static int randInt();
         static int randInt(int min, int max);
         static int randInt(int max);

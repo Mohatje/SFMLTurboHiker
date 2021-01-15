@@ -11,6 +11,7 @@ namespace turbohikerSFML {
 
     World::World(const std::weak_ptr<sf::RenderWindow> &window,
                  const ini::Configuration &config) : _window(window) {
+        // Load yell and speed modify key and set base speed
         std::string speedKey = config["Controls"]["SpeedToggle"].as_string_or_default("F");
         speedToggle = KeyConfigHelper::keyboardFromString(speedKey);
 
@@ -20,6 +21,7 @@ namespace turbohikerSFML {
     }
 
     void World::handleGameEvent(sf::Event& event) {
+        // Handle sfml event, used to toggle speed & yelling
         if (event.type == sf::Event::KeyReleased) {
             if (event.key.code == speedToggle) {
                 setSpeed(getSpeed() + 300.0f);
@@ -35,7 +37,7 @@ namespace turbohikerSFML {
     }
 
     void World::update(float dt) {
-
+        // Move the entities with the view, except the player and racing hikers those `lag` behind a bit
         float offset = Transformation::convertSizeFromPixels(*_window.lock(), {0.0, getSpeed()}).second;
         auto& entities = getEntities();
         for (auto& entity : entities) {
@@ -52,46 +54,6 @@ namespace turbohikerSFML {
             entity->update(dt);
         }
 
-    }
-
-    bool World::removeNearestObstacle(const std::pair<double, double> &distPos) {
-        double distance = 1000.0;
-        for (auto& ent : getEntities()) {
-            auto entType = ent->getType();
-            if (entType == turbohiker::EntityType::StaticHikerActive || entType == turbohiker::EntityType::MovingHikerActive) {
-                auto entPos = ent->getPosition();
-                if (entPos.second < distPos.second) {
-                    continue;
-                }
-
-                double tmpDistance = sqrt(pow((distPos.first - entPos.first), 2) + pow((distPos.second - entPos.second), 2) );
-                distance = distance > tmpDistance ? tmpDistance : distance;
-            }
-        }
-
-        if (distance > 15) return false;
-
-        for (auto& ent : getEntities()) {
-            auto entType = ent->getType();
-            if (entType == turbohiker::EntityType::StaticHikerActive || entType == turbohiker::EntityType::MovingHikerActive) {
-                auto entPos = ent->getPosition();
-                if (entPos.second < distPos.second ) continue;
-
-                double tmpDistance = sqrt( pow((distPos.first - entPos.first), 2) + pow((distPos.second - entPos.second), 2) );
-                if (tmpDistance == distance) {
-                    if (entType == turbohiker::EntityType::StaticHikerActive) {
-                        // Using raw pointer here for a bit, shouldn't pose any memory problem though
-                        // Since the raw pointer is single use only thing anyways. The deletion will still happen as per unique ptr instruction
-                        dynamic_cast<PassingHiker1*> (ent.get())->setActive(false);
-                    } else {
-                        ent->setCurState(turbohiker::EntityAIState::SlowDown);
-                    }
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
 

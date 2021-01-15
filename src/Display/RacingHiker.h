@@ -11,8 +11,22 @@ namespace turbohikerSFML {
 
     class RacingHiker : public turbohiker::RacingHiker {
     public:
+
+        /**
+         * Default Constructor
+         */
         RacingHiker() = default;
+
+        /**
+         * Racing Hiker constructor
+         * @param window weak pointer to the game window
+         * @param configFile config file from which we load the hiker's attributes
+         */
         RacingHiker(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile);
+
+        /**
+         * Method to initialize the Racing Hiker
+         */
         void init();
 
         void display () override;

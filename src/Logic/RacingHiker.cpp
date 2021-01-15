@@ -14,8 +14,9 @@ namespace turbohiker {
         curVelocity.first -= ( curVelocity.first * 8.0 * dTime );
         curVelocity.second -= ( curVelocity.second * 8.0 * dTime );
 
+        // Movement handling, just like with PassingHiker2 (moving hiker)
+        // Based on AI movement
         switch (getCurState()) {
-
             case EntityAIState::Default:
                 return;
             case EntityAIState::SpeedUp:
@@ -44,15 +45,18 @@ namespace turbohiker {
 
 
         auto posAfter = getPosition();
-        double dx = posAfter.first - curPosition.first;
-        double dy = posAfter.second - curPosition.second;
-        if (std::abs(dx) < 0.05) {
 
-        }
-        if (std::abs(dy) < 0.02) {
+        // pathetic attempt at solving AI movement inconsistency, this is a very hacky way and I don't like it
+        // can't afford to spend more time on this
+        resetAIState =      (posAfter.first <= 3.0 && posAfter.first >= -3.0) ||
+                            ( !(getCurState() == EntityAIState::RunL || getCurState() == EntityAIState::RunR) ) ||
 
+                            ((getCurState() == EntityAIState::RunR && curPosition.first >= 3.5) ||
+                            (getCurState() == EntityAIState::RunL && curPosition.first <= -3.5));
+
+        if (resetAIState) {
+            setCurState(EntityAIState::Idle);
         }
-        setCurState(EntityAIState::Idle);
     }
 
     bool RacingHiker::doTypeSpecificAction() {
@@ -60,6 +64,7 @@ namespace turbohiker {
     }
 
     void RacingHiker::printState(char* pretext) {
+        // debug output
         printf("%s\n", pretext);
         printf("Stuck %d\n", getCurState() == EntityAIState::Stuck);
         printf("MovingR %d\n", isMovingR);

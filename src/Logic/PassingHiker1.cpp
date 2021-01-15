@@ -17,6 +17,7 @@ namespace turbohiker {
     }
 
     EntityType PassingHiker1::getType() const {
+        // type is based on whether the hiker is active or not (have they been yelled it and yell was successful?)
         return active ? EntityType::StaticHikerActive : EntityType::StaticHikerInactive;
     }
 

@@ -8,6 +8,13 @@ namespace turbohikerSFML {
 
     class FactoryCreator {
     public:
+        /**
+         * Concrete factory getter
+         * @param factoryName factory name (case insensitive
+         * @param _window game window
+         * @param config config file
+         * @return unique AbstractFactory pointer
+         */
         static std::unique_ptr<turbohiker::AbstractFactory> getFactory(const std::string &factoryName,
                                                                        std::shared_ptr<sf::RenderWindow> &_window,
                                                                        const ini::Configuration &config);

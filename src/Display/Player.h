@@ -10,7 +10,17 @@
 namespace turbohikerSFML {
     class Player : public turbohiker::Player {
     public:
+
+        /**
+         * Default Constructor
+         */
         Player() = default;
+
+        /**
+         * Player constructor
+         * @param window weak pointer to the game window
+         * @param configFile config file from which we load the player's attributes
+         */
         Player(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile);
 
         void display() override;
@@ -18,6 +28,9 @@ namespace turbohikerSFML {
         void move(const std::pair<double, double>& offset) override;
         bool doTypeSpecificAction() override;
 
+        /**
+         * Method to initialize the player
+         */
         void init();
 
         void setPosition(const std::pair<double, double> &_position) override;

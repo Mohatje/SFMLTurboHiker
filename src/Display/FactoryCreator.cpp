@@ -10,6 +10,7 @@ namespace turbohikerSFML {
                                std::shared_ptr<sf::RenderWindow> &_window,
                                const ini::Configuration &config) {
 
+        // Concrete factory creator
         if (turbohiker::HelperFunctions::stringCompare(factoryName, "Entity")) {
             return std::unique_ptr<turbohiker::AbstractFactory>(new EntityFactory(_window, config));
         }

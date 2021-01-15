@@ -11,14 +11,29 @@ namespace turbohikerSFML {
 
     class Game {
     public:
+
+        /**
+         * Default game constructor, uses "./Config/config.ini" as config file path by default
+         */
         Game();
+
+        /**
+         * Game constructor
+         * @param configPath config file path
+         */
         Game(const std::string &configPath );
         ~Game() = default;
 
     public:
+        /**
+         * Method to run the game
+         */
         void run();
+
+        /**
+         * Method used for initializing the game
+         */
         void init();
-        void cleanup();
 
     private:
         Game(const Game& copy);

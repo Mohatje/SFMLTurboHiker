@@ -21,9 +21,7 @@ endif()
 ADD_LIBRARY(TurboHikerLogic STATIC
             src/Logic/AbstractFactory.cpp
             src/Logic/Entity.cpp
-            src/Logic/EntityFactory.cpp
-            src/Logic/FactoryCreator.cpp
-            src/Logic/HelperFunctions.cpp
+        src/Logic/HelperFunctions.cpp
             src/Logic/Random.cpp
             src/Logic/Player.cpp
             src/Logic/World.cpp
@@ -46,14 +44,12 @@ add_executable(SFMLTurboHiker
                 main.cpp
                 src/Display/Animation.cpp
                 src/Display/Transformation.cpp
-                src/Display/AssetManager.cpp
-                src/Display/Player.cpp
+        src/Display/Player.cpp
                 src/Display/KeyConfigHelper.cpp
                 src/Display/FactoryCreator.cpp
                 src/Display/EntityFactory.cpp
                 src/Display/Game.cpp
-                src/Display/State.cpp
-                src/Display/World.cpp
+        src/Display/World.cpp
                 src/Display/TileEntity.cpp
                 src/Display/PassingHiker1.cpp
                 src/Display/PassingHiker2.cpp

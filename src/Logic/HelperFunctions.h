@@ -10,11 +10,10 @@ namespace turbohiker {
         ~HelperFunctions() = default;
 
     public:
-        HelperFunctions& operator=(const HelperFunctions& rhs);
 
         /**
          * Case insensitive comparison of strings
-         * @param lhs First string
+         * @param lhs first string
          * @param rhs second string
          * @return whether the strings are equal or not
          */

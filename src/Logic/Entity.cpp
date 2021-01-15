@@ -27,6 +27,7 @@ namespace turbohiker {
     }
 
     void Entity::move(const std::pair<double, double> &offset) {
+        // Simply add offset to currentPos
         this->position.first += offset.first;
         this->position.second += offset.second;
     }
@@ -50,13 +51,4 @@ namespace turbohiker {
     void Entity::setIsCurrentlyColliding(bool _currentlyColliding) {
         this->currentlyColliding = _currentlyColliding;
     }
-
-//    int Entity::getScore() const {
-//        return this->score;
-//    }
-//
-//    void Entity::setScore(int score) {
-//        this->score = score;
-//    }
-
 }

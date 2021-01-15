@@ -10,9 +10,10 @@ namespace turbohiker {
     }
 
     void LeaderBoard::printLeaderBoard(std::ostream &out) {
+        // ASCII Leaderboard output
         out << "----------Leaderboard----------" << std::endl;
         for (auto& scorePair : scoreObserverMap) {
-            out << scorePair.first << ": " << *dynamic_cast<ScoreObserver*> (scorePair.second.get()) << std::endl;
+            out << scorePair.first << ": " << scorePair.second->getValue() << std::endl;
         }
         out << std::endl;
     }
@@ -22,12 +23,12 @@ namespace turbohiker {
     }
 
     int LeaderBoard::getScore(std::string &name) const {
-        std::stringstream sStream;
-        sStream << *dynamic_cast<ScoreObserver*> (scoreObserverMap.at(name).get());
-        return std::stoi(sStream.str());
+        return scoreObserverMap.at(name)->getValue();
     }
 
     void LeaderBoard::saveHighScore(std::string& playerName) const {
+        // Save current score to file if it's higher than the old highscore (begins at 0)
+        // Imagine having highscore that is negative smh
         int curScore = getScore(playerName);
         std::ofstream highScoreFile;
 
@@ -40,6 +41,8 @@ namespace turbohiker {
     }
 
     int LeaderBoard::getHighScore(const std::string& playerName) const {
+        // Read highscore from file,
+        // if file doesn't exist create it and return 0
         std::fstream highScoreFile(playerName + ".save");
         if ( !highScoreFile.is_open() ) {
             std::cerr << "Failed to open save file. Creating new file." << std::endl;

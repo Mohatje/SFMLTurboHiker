@@ -10,6 +10,8 @@ namespace turbohiker {
 
         // Velocity decay, analogous to player
         curVelocity.first -= ( curVelocity.first * 8.0 * dTime );
+
+        // Handles movement based on AI input
         if (getCurState() == turbohiker::EntityAIState::RunL) {
             curVelocity.first -= 20.0 * dTime;
         }
@@ -42,6 +44,7 @@ namespace turbohiker {
     }
 
     void PassingHiker2::spawn(double playerY) {
+        // Random spawning algorithm based on player y position
         int a = turbohiker::Random::randInt(-4, 4);
         int minY = static_cast<int>(playerY + 0.5) + 8;
         int b = turbohiker::Random::randInt(minY, minY + 5);

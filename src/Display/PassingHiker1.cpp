@@ -7,6 +7,9 @@ namespace turbohikerSFML {
     std::unique_ptr<sf::Texture> PassingHiker1::obstacleTexture ( new sf::Texture() );
 
     PassingHiker1::PassingHiker1(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration &configFile) : _window(window) {
+
+        // Loading hikers parameters and loading textures then initializing
+
         auto tilePath = configFile["StaticObstacle"]["Texture"].as_string_or_default("./media/Tiles/tileSet.png");
         auto activePair = configFile["StaticObstacle"]["ActiveTile"].as_int_tuple_or_default( {14, 0} );
         auto inactivePair = configFile["StaticObstacle"]["InactiveTile"].as_int_tuple_or_default( {13, 0} );
@@ -42,6 +45,7 @@ namespace turbohikerSFML {
     }
 
     void PassingHiker1::spawn(double playerY) {
+        // Spawning algorithm based on player y position
         int a = turbohiker::Random::randInt(-4, 4);
         int minY = static_cast<int>(playerY + 0.5) + 8;
         int b = turbohiker::Random::randInt(minY, minY + 5);

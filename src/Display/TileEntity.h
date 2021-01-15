@@ -7,7 +7,21 @@ namespace turbohikerSFML {
 
     class TileEntity : public turbohiker::Entity {
     public:
+
+        /**
+         * Default constructor
+         */
         TileEntity() = default;
+
+        /**
+         * Tile entity constructor
+         * @param window        weak pointer to game window
+         * @param position      tile entity position
+         * @param size          tile entity size
+         * @param texture       tile entity texture
+         * @param texPosition   tile entity position within the texture (using tile map)
+         * @param stationary    whether or not the entity should move with the game view
+         */
         TileEntity(const std::weak_ptr<sf::RenderWindow> &window,
                    std::pair<double, double> position,
                    std::pair<double, double> size,
@@ -22,12 +36,16 @@ namespace turbohikerSFML {
         bool doTypeSpecificAction() override { return false; }
         void move(const std::pair<double, double>& offset) override;
 
-        turbohiker::EntityType getType() const { return turbohiker::EntityType::Tile; }
+        turbohiker::EntityType getType() const override { return turbohiker::EntityType::Tile; }
 
         void setPosition(const std::pair<double, double> &_position) override;
         void setSize(const std::pair<double, double> &_size) override;
         void setOrigin(const std::pair<double, double> &_origin) override;
 
+        /**
+         * Change whether or not the entity should move with the game view
+         * @param _static   true if not moving, false if moving
+         */
         void setStatic(bool _static);
 
     private:

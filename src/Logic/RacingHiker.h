@@ -14,6 +14,12 @@ namespace turbohiker {
         bool isMovingR = false;
         bool isMovingL = false;
 
+        bool resetAIState = true;
+
+        /**
+         * Private Debugging method
+         * @param pretext pretext
+         */
         void printState(char* pretext);
     };
 }

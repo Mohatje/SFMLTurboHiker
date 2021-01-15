@@ -9,8 +9,16 @@ namespace turbohiker {
         void update(float dTime) override;
         bool doTypeSpecificAction() override;
 
+        /**
+         * Method to see wether the Static Hiker is active or not (yelled at or not)
+         * @return bool isActive
+         */
         bool isActive() const;
 
+        /**
+         * Setter for the isActive flag of the Static Hiker
+         * @param active boolean to which the flag should be set
+         */
         virtual void setActive(bool active);
 
         EntityType getType() const override;

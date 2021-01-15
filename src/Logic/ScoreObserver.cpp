@@ -6,6 +6,7 @@ namespace turbohiker {
     void ScoreObserver::onNotify(ObservableEvent event) {
         if (finished) return;
 
+        // If player is finished then we don't change their score, else we change it based on the observed event
         switch (event) {
             case ObservableEvent::None:
                 break;
@@ -64,11 +65,8 @@ namespace turbohiker {
 
     }
 
-
-
-    std::ostream &operator<<(std::ostream &out, const ScoreObserver& so) {
-        out << so.score;
-        return out;
+    int ScoreObserver::getValue() {
+        return score;
     }
 
 }

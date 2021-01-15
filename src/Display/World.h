@@ -8,21 +8,35 @@ namespace turbohikerSFML {
 
     class World : public turbohiker::World {
     public:
+
+        /**
+         * Default constructor
+         */
         World() = default;
-        ~World() = default;
+
+        /**
+         * Default destructor
+         */
+        ~World() override = default;
+
+        /**
+         * World constructor
+         * @param window        weak pointer to the game window
+         * @param configFile    config file from which we load the world's attributes
+         */
         World(const std::weak_ptr<sf::RenderWindow> &window, const ini::Configuration& config);
 
-        void update(float dTime) override;
+        /**
+         * Method to handle SFML specific events which have effect on the world
+         * @param event     sf::Event reference to be handled
+         */
         void handleGameEvent(sf::Event &event);
-        bool removeNearestObstacle(const std::pair<double, double> &distPos) override;
+        void update(float dTime) override;
 
     private:
         sf::Keyboard::Key speedToggle;
         sf::Keyboard::Key yellKey;
         std::weak_ptr<sf::RenderWindow> _window;
-
-        sf::Event worldEvent {};
-
     };
 }
 

@@ -30,10 +30,26 @@ namespace turbohiker {
 
     class Observer {
     public:
+        /**
+         * Default constructor
+         */
         Observer() = default;
+        /**
+         * Default destructor
+         */
         virtual ~Observer() = default;
 
+        /**
+         * Method to receive notifications and handle incoming events
+         * @param event an ObservableEvent which needs to be handled
+         */
         virtual void onNotify(ObservableEvent event) = 0;
+
+        /**
+         * Generic interface method to get a value from an observer
+         * @return value of observer
+         */
+        virtual int getValue() = 0;
 
     };
 

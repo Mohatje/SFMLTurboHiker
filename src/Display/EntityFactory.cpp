@@ -15,6 +15,7 @@ namespace turbohikerSFML {
     }
 
     std::unique_ptr<turbohiker::Entity> EntityFactory::createEntity(turbohiker::EntityType ent) {
+        // simple switch case to create every possible entity, sometimes there are duplicates (in the switch statement) which is fine
         std::weak_ptr<sf::RenderWindow> weakPtrWindow = window;
         std::unique_ptr<turbohiker::Entity> entity;
         switch (ent) {
