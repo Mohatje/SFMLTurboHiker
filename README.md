@@ -9,7 +9,7 @@ Mohammed Al-Ogaili - 20193575
 ## Notes
 - There's a configuration file found in {BUILD_FOLDER}/Config/config.ini
 - Resource files get copied to the build folder, so after building the project the config file inside the build folder should be edited and not the one in the project folder.
-- Almost all textures can be change inside the .ini file, I've included some textures that can be used, much thanks to the people on itch.io.
+- Almost all textures can be changed inside the .ini file, I've included some textures that can be used, much thanks to the people on itch.io.
 
 ## Rules
 - Try to reach the finish line as fast as you can
