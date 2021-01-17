@@ -382,7 +382,7 @@ void Game::run()
                 // draw elements to screen
                 window->clear(sf::Color::Magenta);
                 window->setView(gameView);
-                finishAnimation->update(0, float(fixedDelta));
+                finishAnimation->update(0, dTime);
                 world->displayTiles();
                 for (auto& rect : finishPortals) {
                         rect.setTextureRect(finishAnimation->textureRect);
