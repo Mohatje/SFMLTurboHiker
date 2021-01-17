@@ -18,10 +18,16 @@ Mohammed Al-Ogaili - 20193575
 - Highscores are saved inbetween runs, so try to beat your previous score!
 
 ## Controls
-All controls can be changed in the config file
+All controls can be changed in the config file.
 - Up: W
 - Down: S
 - Left: A
 - Right: D
 - Yell: Y
 - Change speed: F
+
+## (Extra) Features
+- Easily customizable and highly configurable game (ini file config)
+	- Everything from textures to sounds to controls is configurable
+- Animated characters / entities
+- Dynamic animation speed adjustment
