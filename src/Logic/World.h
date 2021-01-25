@@ -31,7 +31,7 @@ public:
         /**
          * Default destructor
          */
-        ~World() = default;
+        ~World() override = default;
 
         void display() override;
         void update(float dt) override;
