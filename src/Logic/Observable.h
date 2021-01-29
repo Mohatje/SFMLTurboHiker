@@ -9,6 +9,9 @@ class Observable
 public:
         using SharedObserverRef = std::shared_ptr<Observer>;
 
+        Observable() = default;
+        virtual ~Observable() = default;
+
 public:
         /**
          * Method to add an Observer to the List of observers of an Observable Entity
